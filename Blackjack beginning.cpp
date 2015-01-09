@@ -28,7 +28,6 @@ struct hand { // Place where the players keep their cards. The count is the thin
 	card playerCard[10];
 	int count = 0;
 	int numCards = 0;
-	bool bust = false;
 };
 
 
@@ -108,41 +107,29 @@ void shuffle(card *cards){ // The weird shuffle thing
 
 }
 
-void deal(card *cards,hand *hands,int players,card *top){ //Gives cards out to all the players in the game.Topdeck is supposed to be a way of referencing the top of the "stack", or deck.
+int deal(card *cards,hand *hands,int players,int topDeck){ //Gives cards out to all the players in the game.Topdeck is supposed to be a way of referencing the top of the "stack", or deck.
 	for (int i = 0; i <= players - 1; i++){				   // The way topDeck is handled is currently pretty bad and should be improved.
-		hands[i].playerCard[0].value = top[0].value;
-		hands[i].playerCard[0].suit = top[0].suit;
-		top++;
-		hands[i].playerCard[1].value = top[0].value;
-		hands[i].playerCard[1].suit = top[0].suit;
-		top++;
+		hands[i].playerCard[0].value = cards[topDeck].value;
+		hands[i].playerCard[0].suit = cards[topDeck].suit;
+		topDeck++;
+		hands[i].playerCard[1].value = cards[topDeck].value;
+		hands[i].playerCard[1].suit = cards[topDeck].suit;
+		topDeck++;
 	}
 
-}
-
-void blackjack(card *cards, hand *hands, int players, card *top){
-
+	return topDeck;
 }
 
 int startGame(card *cards){ // Screw non-dealer AI for now, just the dealer and the player...
-	hand hands[4];		// The master game thing which calls all the other game functions.
-	int topDeck = 0;	
-	card *top = &cards[0];
-	bool end = false;
-	int players = 2;
+	hand hands[4];
+	int topDeck = 0;		// The master game thing which calls all the other game functions.
 
 	shuffle(&cards[0]);
 	printCard(&cards[0]);
 
-	 deal(cards,&hands[0],players,top);
-
-
+	topDeck = deal(cards,&hands[0],2,topDeck);
 	printf("Player one has ");
 	printCard(&hands[0].playerCard[0]);
-
-	while (end == false){
-		blackjack(&cards[0],&hands[0],players,top);
-	}
 
 	return 0;
 }
