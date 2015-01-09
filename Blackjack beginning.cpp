@@ -1,6 +1,15 @@
+/*
+I'm not sure we actually need to initalize the deck. We can just generate a card when we need one,
+and check it against the otehr cards in play to make sure there are no duplicates. Otherwise,
+we should have an in-play / not-in-play boolean-esque variable in the card struct to determine
+whether or not it's in play.
 // Blackjack beginning.cpp : Defines the entry point for the console application.
+<<<<<<< HEAD
 //Requirements: File things, Recursion,?
 // There is currently a lot of test printfs which should maybe be removed?
+=======
+*/
+>>>>>>> origin/master
 
 //#include "stdafx.h"
 #include <stdio.h>
