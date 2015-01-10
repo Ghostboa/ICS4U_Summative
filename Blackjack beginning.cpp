@@ -7,7 +7,7 @@ whether or not it's in play.*/
 // Blackjack beginning.cpp : Defines the entry point for the console application.
 
 //Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
-// Other cool stuff: Variable AI aggressiveness/Number of Players, number of cards, game records or login thing, actual betting.
+// Other cool stuff: Variable AI aggressiveness/Number of Players, number of cards, game records or login thing, actual betting, encrypted files, difficulty settings.
 
 // There is currently a lot of test printfs which should maybe be removed?
 
@@ -18,25 +18,35 @@ whether or not it's in play.*/
 #include <iostream>
 #include "time.h"
 
-int const maxCards = 52;
+//__________________________________________________________________Structures and Constants
+int const maxCards = 52; //#define maxCards 52
 
-enum suits { Hearts, Diamonds, Clubs, Spades };
-struct card{
-	int value; // Goes from 1 to 13
-	int count; // Goes from 1 to 10
-	suits suit;
+enum suits {Spades, Hearts, Diamonds, Clubs};
+
+//Deck Proposition
+struct inPlay{
+    bool played;
 };
 
-struct hand { // Place where the players keep their cards. The count is the thing going up to 21.
-    //This was giving me errors unless I DID NOT initialize them (ISO C++ forbids initialization of member 'count')
-	card playerCard[10];
-	int count;
-	int numCards;
+struct cards{
+    inPlay Spades[12];
+    inPlay Hearts[12];
+    inPlay Diamonds[12];
+    inPlay Clubs[12];
 };
 
+cards deck; //two dimensional array, accessed by deck.Spades[1].played  (would return 1 or 0, depending on whether the ace of spades is in play)
 
 
-int rb(int min, int max) { // Magic random number thingy //...magic?
+struct playerCard {
+    int suit;
+    int value;
+};
+
+playerCard hand[80]; //hand[1].suit would return the suit of the first card in hand
+
+//__________________________________________________________________Basic Functions
+int rb(int min, int max) { // Magic random number thingy
 	return rand() % (max - min + 1) + min;
 }
 
@@ -51,7 +61,7 @@ int getNum(int min, int max){ // Thing Wilson likes to have to get a number betw
 	return num;
 }
 
-void swap(int a, int b){
+void swap(int a, int b){ //swaps two elements
 	int temp;
 
 	temp = a;
@@ -59,90 +69,62 @@ void swap(int a, int b){
 	b = temp;
 }
 
-void swapCards(card *card1, card *card2){ // A swap. For cards. this is the hack way that I shuffle the deck.
-	card tempCard;
-	tempCard.value = card1[0].value;
-	tempCard.suit = card1[0].suit;
-	card1[0].value = card2[0].value;
-	card1[0].suit = card2[0].suit;
-	card2[0].value = tempCard.value;
-	card2[0].suit = tempCard.suit;
-
-
+int cardCheck (int suit, int value){ //returns whether a certain card is in play (1 is in play, 0 is in deck)
+    switch (suit){
+    case 0:
+        return deck.Spades[value].played;
+    case 1:
+        return deck.Hearts[value].played;
+    case 2:
+        return deck.Diamonds[value].played;
+    case 3:
+        return deck.Clubs[value].played;
+    }
 }
 
-void startCards(card *cards){ // Function that initializes all of the cards.
+void hit(int player, int* hand){
+int tempSuit;
+int tempValue;
+    do {
+        tempSuit = rand () % 3;
+        tempValue = rand () % 12;
+    }while (!cardCheck(tempSuit, tempValue));
+    //need to remove card from deck, place in player's hand
+}
 
-	// It is entirely possible that the cards could be implemented as a linked list.
-	int num = 0;			   // I don't know how to do that. -Wilson
-	for (int i = 1; i <= 13; i++){
-		cards[num].value = i;
-		cards[num].suit = Hearts;
-		num++;
-		cards[num].value = i;
-		cards[num].suit = Diamonds;
-		num++;
-		cards[num].value = i;
-		cards[num].suit = Clubs;
-		num++;
-		cards[num].value = i;
-		cards[num].suit = Spades;
-		num++;
+//__________________________________________________________________Complex Functions
+void deckReset (){
+	for (int i = 0; i <= 13; i++){
+	    deck.Spades[i].played = 0;
+	    deck.Hearts[i].played = 0;
+        deck.Diamonds[i].played = 0;
+	    deck.Clubs[i].played = 0;
 	}
-	for (int i = 0; i < 52; i++)
-		if (cards[i].value <= 10)
-			cards[i].count = cards[i].value;
-		else
-			cards[i].count = 10;
 }
 
-void printCard(card *cards){ // Function that prints cards. It doesn't quite do jack/queen/king yet. Oh well.
-	switch (cards[0].value){
-	case (1):
-		printf("A%c\n", cards[0].suit + 3);
-		break;
-	case (11) :
-		printf("J%c\n", cards[0].suit + 3);
-		break;
-	case (12) :
-		printf("Q%c\n", cards[0].suit + 3);
-		break;
-	case (13) :
-		printf("K%c\n", cards[0].suit + 3);
-		break;
-	default:
-		printf("%i%c\n", cards[0].value, cards[0].suit + 3);
-		break;
-	}
-
-
-
+void printCard(int suit, int value){
+    switch (value){
+    case 1:
+        printf("A%c\n", suit + 3);
+        break;
+    case 11:
+        printf("J%c\n", suit + 3);
+        break;
+    case 12:
+        printf("Q%c\n", suit + 3);
+        break;
+    case 13:
+        printf("K%c\n", suit + 3);
+        break;
+    default:
+        printf("%i%c\n", value, suit);
+        break;
+    }
 }
 
-int startMenu(){ // the menu.
-    //I made this clear BOTH before AND after, and have a pretty-ish title
-	int user = 100;
-    system("cls");
-    printf ("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
-	printf("0. Rules \n");
-	printf("1. Start game. \n");
-	printf ("2. Exit\n");
-
-	user = getNum(0, 2);
-	system("cls");
-	return user;
-}
-
-void shuffle(card *cards){ // The weird shuffle thing. This will be recursive at some point
-	for (int i = 0; i <= 2*maxCards; i++){
-		swapCards(&cards[rb(0, maxCards - 1)], &cards[rb(0, maxCards - 1)]);
-	}
-
-}
-
-void hit(card *cards, hand *hands, int players, int topDeck){
-
-
+void rules(){
+	printf("Example Rules\n");
+    system ("PAUSE");
 }
 
 int deal(card *cards, hand *hands, int players, int topDeck){ //Gives cards out to all the players in the game.Topdeck is supposed to be a way of referencing the top of the "stack", or deck.
@@ -158,11 +140,26 @@ int deal(card *cards, hand *hands, int players, int topDeck){ //Gives cards out 
 	return topDeck;
 }
 
+//__________________________________________________________________Menu and Directories
+int startMenu(){ // the menu.
+    //Made this clear both before AND after, and have a pretty (subjective) title
+	int user = 100;
+    system("cls");
+    printf ("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
+	printf("0. Rules \n");
+	printf("1. Start game. \n");
+	printf ("2. Exit\n");
+
+	user = getNum(0, 2);
+	system("cls");
+	return user;
+}
+
 int startGame(card *cards){ // Screw non-dealer AI for now, just the dealer and the player...
 	hand hands[4];
 	int topDeck = 0;		// The master game thing which calls all the other game functions.
 
-	shuffle(&cards[0]);
+//	shuffle(&cards[0]);
 	printCard(&cards[0]);
 
 	topDeck = deal(cards, &hands[0], 2, topDeck);
@@ -173,11 +170,6 @@ int startGame(card *cards){ // Screw non-dealer AI for now, just the dealer and 
     printf ("reached end of startgame\n");
     system ("PAUSE");
 	return 0;
-}
-
-void rules(){
-	printf("Example Rules\n");
-    system ("PAUSE");
 }
 
 int main()
@@ -209,3 +201,89 @@ int main()
 	return 0;
 }
 
+//__________________________________________________________________Void Code
+/*
+struct card{
+	int value; // Goes from 1 to 13
+	int count; // Goes from 1 to 10
+	suits suit;
+};
+*/
+
+/*
+void shuffle(card *cards, int deckRemaining){ // The weird shuffle thing. This will be recursive at some point
+    //entire shuffling should be unnecessary.  Instead, generate a card and check whether in play.
+	for (int i = 0; i <= 2*maxCards; i++){
+		swapCards(&cards[rb(0, maxCards - 1)], &cards[rb(0, maxCards - 1)]);
+	}
+	*/
+	//shuffling deck is n time complexity and uses the single array + temp slot for swapping
+	/*
+	int temp = 0;
+	if (n == 0)
+        return 1;
+    else
+        temp = rand() % n;
+	swap ()
+}
+*/
+
+/*
+void swapCards(card *card1, card *card2){ // A swap. For cards. this is the hack way that I shuffle the deck.
+	card tempCard;
+	tempCard.value = card1[0].value;
+	tempCard.suit = card1[0].suit;
+	card1[0].value = card2[0].value;
+	card1[0].suit = card2[0].suit;
+	card2[0].value = tempCard.value;
+	card2[0].suit = tempCard.suit;
+}
+*/
+
+/*
+void startCards(card *cards){ // Function that initializes all of the cards.
+
+	int num = 0;
+	for (int i = 0; i <= 13; i++){
+		cards[num].value = i;
+		cards[num].suit = Hearts;
+		num++;
+		cards[num].value = i;
+		cards[num].suit = Diamonds;
+		num++;
+		cards[num].value = i;
+		cards[num].suit = Clubs;
+		num++;
+		cards[num].value = i;
+		cards[num].suit = Spades;
+		num++;
+	}
+	for (int i = 0; i < 52; i++)
+		if (cards[i].value <= 10)
+			cards[i].count = cards[i].value;
+		else
+			cards[i].count = 10;
+}
+*/
+
+/*
+void printCard(card *cards){ // Function that prints cards.
+	switch (cards[0].value){
+	case (1):
+		printf("A%c\n", cards[0].suit + 3);
+		break;
+	case (11) :
+		printf("J%c\n", cards[0].suit + 3);
+		break;
+	case (12) :
+		printf("Q%c\n", cards[0].suit + 3);
+		break;
+	case (13) :
+		printf("K%c\n", cards[0].suit + 3);
+		break;
+	default:
+		printf("%i%c\n", cards[0].value, cards[0].suit + 3);
+		break;
+	}
+}
+*/
