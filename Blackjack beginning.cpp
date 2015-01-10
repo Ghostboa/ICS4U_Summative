@@ -23,35 +23,35 @@ int const maxCards = 52;
 enum suits { Hearts, Diamonds, Clubs, Spades };
 struct card{
 	int value; // Goes from 1 to 13
-	int count; // Goes from 1 to 10
+	int counter; // Goes from 1 to 10
 	suits suit;
 };
 
 struct hand { // Place where the players keep their cards. The count is the thing going up to 21.
-    //This was giving me errors unless I DID NOT initialize them (ISO C++ forbids initialization of member 'count')
+	//This was giving me errors unless I DID NOT initialize them (ISO C++ forbids initialization of member 'count')
 	card playerCard[10];
-	int count;
-	int numCards;
+	int handCounter = 0;;
+	int numCards = 0;;
 };
 
 
 
-int rb(int min, int max) { // Magic random number thingy //...magic?
-	return rand() % (max - min + 1) + min;
+int rb(int lo, int hi) { // Magic random number thingy //...magic?
+	return rand() % (hi - lo + 1) + lo;
 }
 
-int getNum(int min, int max){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
-    //good for invalid answer prevention
+int getNum(int lo, int hi){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
+	//good for invalid answer prevention
 	int num = 0;
 
 	std::cin >> num;
-	while (num < min || num > max){
+	while (num < lo || num > hi){
 		std::cin >> num;
 	}
 	return num;
 }
 
-void swap(int a, int b){
+void swop(int a, int b){
 	int temp;
 
 	temp = a;
@@ -91,14 +91,14 @@ void startCards(card *cards){ // Function that initializes all of the cards.
 	}
 	for (int i = 0; i < 52; i++)
 		if (cards[i].value <= 10)
-			cards[i].count = cards[i].value;
+			cards[i].counter = cards[i].value;
 		else
-			cards[i].count = 10;
+			cards[i].counter = 10;
 }
 
 void printCard(card *cards){ // Function that prints cards. It doesn't quite do jack/queen/king yet. Oh well.
 	switch (cards[0].value){
-	case (1):
+	case (1) :
 		printf("A%c\n", cards[0].suit + 3);
 		break;
 	case (11) :
@@ -120,13 +120,13 @@ void printCard(card *cards){ // Function that prints cards. It doesn't quite do 
 }
 
 int startMenu(){ // the menu.
-    //I made this clear BOTH before AND after, and have a pretty-ish title
+	//I made this clear BOTH before AND after, and have a pretty-ish title
 	int user = 100;
-    system("cls");
-    printf ("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
+	system("cls");
+	printf("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
 	printf("0. Rules \n");
 	printf("1. Start game. \n");
-	printf ("2. Exit\n");
+	printf("2. Exit\n");
 
 	user = getNum(0, 2);
 	system("cls");
@@ -134,7 +134,7 @@ int startMenu(){ // the menu.
 }
 
 void shuffle(card *cards){ // The weird shuffle thing. This will be recursive at some point
-	for (int i = 0; i <= 2*maxCards; i++){
+	for (int i = 0; i <= 2 * maxCards; i++){
 		swapCards(&cards[rb(0, maxCards - 1)], &cards[rb(0, maxCards - 1)]);
 	}
 
@@ -170,42 +170,41 @@ int startGame(card *cards){ // Screw non-dealer AI for now, just the dealer and 
 	printCard(&hands[0].playerCard[0]);
 	printCard(&hands[0].playerCard[1]);
 
-    printf ("reached end of startgame\n");
-    system ("PAUSE");
+	printf("reached end of startgame\n");
+	system("PAUSE");
 	return 0;
 }
 
 void rules(){
 	printf("Example Rules\n");
-    system ("PAUSE");
+	system("PAUSE");
 }
 
 int main()
 {
 	card cards[maxCards];
 
-    ////////////////////////////////////////
+	////////////////////////////////////////
 	srand(time(NULL)); // Seeding the thing
 	startCards(&cards[0]);
 	printCard(&cards[0]);
 	//we only need this once they start the game? otherwise it's just a waste?
 	////////////////////////////////////////
 
-    while (1){
-        switch (startMenu()){
-        case (0) :
-            rules();
-            break;
+	while (1){
+		switch (startMenu()){
+		case (0) :
+			rules();
+			break;
 
-        case (1) :
-            startGame(&cards[0]);
-            break;
+		case (1) :
+			startGame(&cards[0]);
+			break;
 
-        case (2) :
-            return 0;
-        }
-    }
+		case (2) :
+			return 0;
+		}
+	}
 	system("PAUSE");
 	return 0;
 }
-
