@@ -1,19 +1,17 @@
 /*
 I'm not sure we actually need to initalize the deck. We can just generate a card when we need one,
-and check it against the otehr cards in play to make sure there are no duplicates. Otherwise,
+and check it against the other cards in play to make sure there are no duplicates. Otherwise,
 we should have an in-play / not-in-play boolean-esque variable in the card struct to determine
 whether or not it's in play.*/
 
 // Blackjack beginning.cpp : Defines the entry point for the console application.
-
-//THIS IS A TEST COMMIT
 
 //Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
 // Other cool stuff: Variable AI aggressiveness/Number of Players, number of cards, game records or login thing, actual betting.
 
 // There is currently a lot of test printfs which should maybe be removed?
 
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,18 +28,20 @@ struct card{
 };
 
 struct hand { // Place where the players keep their cards. The count is the thing going up to 21.
+    //This was giving me errors unless I DID NOT initialize them (ISO C++ forbids initialization of member 'count')
 	card playerCard[10];
-	int count = 0;
-	int numCards = 0;
+	int count;
+	int numCards;
 };
 
 
 
-int rb(int min, int max) { // Magic random number thingy
+int rb(int min, int max) { // Magic random number thingy //...magic?
 	return rand() % (max - min + 1) + min;
 }
 
 int getNum(int min, int max){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
+    //good for invalid answer prevention
 	int num = 0;
 
 	std::cin >> num;
@@ -120,11 +120,15 @@ void printCard(card *cards){ // Function that prints cards. It doesn't quite do 
 }
 
 int startMenu(){ // the menu.
+    //I made this clear BOTH before AND after, and have a pretty-ish title
 	int user = 100;
+    system("cls");
+    printf ("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
 	printf("0. Rules \n");
 	printf("1. Start game. \n");
+	printf ("2. Exit\n");
 
-	user = getNum(0, 1);
+	user = getNum(0, 2);
 	system("cls");
 	return user;
 }
@@ -166,26 +170,41 @@ int startGame(card *cards){ // Screw non-dealer AI for now, just the dealer and 
 	printCard(&hands[0].playerCard[0]);
 	printCard(&hands[0].playerCard[1]);
 
+    printf ("reached end of startgame\n");
+    system ("PAUSE");
 	return 0;
 }
 
 void rules(){
 	printf("Example Rules\n");
+    system ("PAUSE");
 }
 
 int main()
 {
 	card cards[maxCards];
 
-
+    ////////////////////////////////////////
 	srand(time(NULL)); // Seeding the thing
 	startCards(&cards[0]);
 	printCard(&cards[0]);
-	switch (startMenu()){
-	case (0) : rules();
+	//we only need this once they start the game? otherwise it's just a waste?
+	////////////////////////////////////////
 
-	case (1) : startGame(&cards[0]);
-	}
+    while (1){
+        switch (startMenu()){
+        case (0) :
+            rules();
+            break;
+
+        case (1) :
+            startGame(&cards[0]);
+            break;
+
+        case (2) :
+            return 0;
+        }
+    }
 	system("PAUSE");
 	return 0;
 }
