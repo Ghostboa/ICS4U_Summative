@@ -6,9 +6,10 @@ whether or not it's in play.*/
 
 // Blackjack beginning.cpp : Defines the entry point for the console application.
 
+//THIS IS A TEST COMMIT
 
 //Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
-// Other cool stuff: Variable AI aggressiveness/Number of Players, number of cards, game records or login thing, actual betting. 
+// Other cool stuff: Variable AI aggressiveness/Number of Players, number of cards, game records or login thing, actual betting.
 
 // There is currently a lot of test printfs which should maybe be removed?
 
@@ -72,7 +73,7 @@ void swapCards(card *card1, card *card2){ // A swap. For cards. this is the hack
 
 void startCards(card *cards){ // Function that initializes all of the cards.
 
-	// It is entirely possible that the cards could be implemented as a linked list. 
+	// It is entirely possible that the cards could be implemented as a linked list.
 	int num = 0;			   // I don't know how to do that. -Wilson
 	for (int i = 1; i <= 13; i++){
 		cards[num].value = i;
@@ -113,7 +114,7 @@ void printCard(card *cards){ // Function that prints cards. It doesn't quite do 
 		printf("%i%c\n", cards[0].value, cards[0].suit + 3);
 		break;
 	}
-	
+
 
 
 }
@@ -137,7 +138,7 @@ void shuffle(card *cards){ // The weird shuffle thing. This will be recursive at
 
 void hit(card *cards, hand *hands, int players, int topDeck){
 
-	
+
 }
 
 int deal(card *cards, hand *hands, int players, int topDeck){ //Gives cards out to all the players in the game.Topdeck is supposed to be a way of referencing the top of the "stack", or deck.
@@ -157,7 +158,7 @@ int startGame(card *cards){ // Screw non-dealer AI for now, just the dealer and 
 	hand hands[4];
 	int topDeck = 0;		// The master game thing which calls all the other game functions.
 
-	shuffle(&cards[0]);    
+	shuffle(&cards[0]);
 	printCard(&cards[0]);
 
 	topDeck = deal(cards, &hands[0], 2, topDeck);
