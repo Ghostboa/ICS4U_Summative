@@ -6,8 +6,8 @@ whether or not it's in play.*/
 
 // Blackjack beginning.cpp : Defines the entry point for the console application.
 
-//Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI. 
-// Other cool stuff: Variable AI aggressiveness/Number of Players, number of cards, game records or login thing, actual betting.
+//Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
+// Other cool stuff: Variable AI aggressiveness/Number of Players, number of cards, game records or login thing, actual betting, encrypted files, difficulty settings.
 
 
 //IMPORTANT NOTE: ACES ARE NOT HANDLED CORRECTLY YET!
@@ -19,27 +19,42 @@ whether or not it's in play.*/
 #include <iostream>
 #include "time.h"
 
-int const maxCards = 52;
+//__________________________________________________________________Structures and Constants
+int const maxCards = 52; //#define maxCards 52
 
-enum suits { Hearts, Diamonds, Clubs, Spades };
-struct card{
-	int value ; // Goes from 1 to 13
-	int counter ; // Goes from 1 to 10
-	suits suit;
+enum suits {Spades, Hearts, Diamonds, Clubs};
+
+//Deck Proposition
+struct inPlay{
+    bool played;
 };
 
-struct hand { // Place where the players keep their cards. The count is the thing going up to 21.
-	//This was giving me errors unless I DID NOT initialize them (ISO C++ forbids initialization of member 'count')
-	card playerCard[10];
-	int handCounter = 0;
-	int numCards = 0;
-	bool bust = false;
+struct cards{
+    inPlay Spades[12];
+    inPlay Hearts[12];
+    inPlay Diamonds[12];
+    inPlay Clubs[12];
 };
 
+cards deck; //two dimensional array, accessed by deck.Spades[1].played  (would return 1 or 0, depending on whether the ace of spades is in play)
 
 
-int rb(int lo, int hi) { // Magic random number thingy //...magic?
-	return rand() % (hi - lo + 1) + lo;
+struct playerCard {
+    int suit;
+    int value;
+};
+
+struct profile {
+    int numCards;
+    playerCard hand[11];
+    int money;
+};
+
+profile player[2];//initialization of dealer and hooman, will need to manually initialize later
+
+//__________________________________________________________________Basic Functions
+int rb(int min, int max) { // Magic random number thingy
+	return rand() % (max - min + 1) + min;
 }
 
 int getNum(int lo, int hi){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
@@ -53,7 +68,7 @@ int getNum(int lo, int hi){ // Thing Wilson likes to have to get a number betwee
 	return num;
 }
 
-void swop(int a, int b){
+void swap(int a, int b){ //swaps two elements
 	int temp;
 
 	temp = a;
@@ -61,6 +76,162 @@ void swop(int a, int b){
 	b = temp;
 }
 
+int cardCheck (int suit, int value){ //returns whether a certain card is in play (1 is in play, 0 is in deck)
+    switch (suit){
+    case 0:
+        return deck.Spades[value].played;
+    case 1:
+        return deck.Hearts[value].played;
+    case 2:
+        return deck.Diamonds[value].played;
+    case 3:
+        return deck.Clubs[value].played;
+    }
+}
+
+void hit(int player, int* suit, int* value){
+int tempSuit;
+int tempValue;
+    do {
+        tempSuit = rand () % 3;
+        tempValue = rand () % 12;
+    }while (!cardCheck(tempSuit, tempValue));
+    //need to remove card from deck, place in player's hand
+}
+
+//__________________________________________________________________Complex Functions
+void deckReset (){
+	for (int i = 0; i <= 13; i++){
+	    deck.Spades[i].played = 0;
+	    deck.Hearts[i].played = 0;
+        deck.Diamonds[i].played = 0;
+	    deck.Clubs[i].played = 0;
+	}
+}
+
+void printCard(int suit, int value){
+    switch (value){
+    case 1:
+        printf("A%c", suit + 3);
+        break;
+    case 11:
+        printf("J%c", suit + 3);
+        break;
+    case 12:
+        printf("Q%c", suit + 3);
+        break;
+    case 13:
+        printf("K%c", suit + 3);
+        break;
+    default:
+        printf("%i%c", value, suit);
+        break;
+    }
+}
+
+void rules(){
+	printf("Example Rules\n");
+    system ("PAUSE");
+}
+
+void deal (int numPlayers){
+    for (int i = numPlayers; i <=0; i--)
+        for (int j = 0; j >=2; j++)
+            hit(i, &player[i].hand[j].suit, &player[i].hand[j].value);
+}
+
+void display (int numPlayers){
+    printf ("Dealer\t");
+    for (int i = 1; i <= numPlayers; i++){
+        printf ("player%i\t",i);
+    }
+    printf ("\n");
+    for (int i = 0; i <= numPlayers; i++){
+        for (int j = 0; j <= player[i].numCards; j++)
+            printCard(player[i].hand[j].suit, player[i].hand[j].value);
+    printf ("\t");
+    }
+    printf ("\n");
+}
+
+//__________________________________________________________________Menu and Directories
+int startMenu(){ // the menu.
+    //Made this clear both before AND after, and have a pretty (subjective) title
+	int user = 100;
+    system("cls");
+    printf ("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
+	printf("0. Rules \n");
+	printf("1. Start game. \n");
+	printf ("2. Exit\n");
+
+	user = getNum(0, 2);
+	system("cls");
+	return user;
+}
+
+int mainGame(){
+
+    deckReset();
+
+    //need function to get number of players (currently set to 2)
+    deal(2);
+
+    display(2);
+
+    system ("PAUSE");
+	return 0;
+}
+
+int main()
+{
+	srand(time(NULL)); // Seeding the thing
+
+    while (1){
+        switch (startMenu()){
+        case (0) :
+            rules();
+            break;
+
+        case (1) :
+            mainGame();
+            break;
+
+        case (2) :
+            return 0;
+        }
+    }
+	system("PAUSE");
+	return 0;
+}
+
+//__________________________________________________________________Void Code
+/*
+struct card{
+	int value; // Goes from 1 to 13
+	int count; // Goes from 1 to 10
+	suits suit;
+};
+*/
+
+/*
+void shuffle(card *cards, int deckRemaining){ // The weird shuffle thing. This will be recursive at some point
+    //entire shuffling should be unnecessary.  Instead, generate a card and check whether in play.
+	for (int i = 0; i <= 2*maxCards; i++){
+		swapCards(&cards[rb(0, maxCards - 1)], &cards[rb(0, maxCards - 1)]);
+	}
+	*/
+	//shuffling deck is n time complexity and uses the single array + temp slot for swapping
+	/*
+	int temp = 0;
+	if (n == 0)
+        return 1;
+    else
+        temp = rand() % n;
+	swap ()
+}
+*/
+
+/*
 void swapCards(card *card1, card *card2){ // A swap. For cards. this is the hack way that I shuffle the deck.
 	card tempCard;
 	tempCard.value = card1[0].value;
@@ -71,16 +242,20 @@ void swapCards(card *card1, card *card2){ // A swap. For cards. this is the hack
 	card1[0].counter = card2[0].counter;
 	card2[0].value = tempCard.value;
 	card2[0].suit = tempCard.suit;
+<<<<<<< HEAD
 	card2[0].counter = tempCard.counter;
 
 
+=======
+>>>>>>> origin/The-Follicle
 }
+*/
 
+/*
 void startCards(card *cards){ // Function that initializes all of the cards.
 
-	// It is entirely possible that the cards could be implemented as a linked list.
-	int num = 0;			   // I don't know how to do that. -Wilson
-	for (int i = 1; i <= 13; i++){
+	int num = 0;
+	for (int i = 0; i <= 13; i++){
 		cards[num].value = i;
 		cards[num].suit = Hearts;
 		num++;
@@ -100,8 +275,10 @@ void startCards(card *cards){ // Function that initializes all of the cards.
 		else
 			cards[i].counter = 10;
 }
+*/
 
-void printCard(card *cards){ // Function that prints cards. It doesn't quite do jack/queen/king yet. Oh well.
+/*
+void printCard(card *cards){ // Function that prints cards.
 	switch (cards[0].value){
 	case (1) :
 		printf("A%c ", cards[0].suit + 3);
@@ -119,6 +296,7 @@ void printCard(card *cards){ // Function that prints cards. It doesn't quite do 
 		printf("%i%c ", cards[0].value, cards[0].suit + 3);
 		break;
 	}
+<<<<<<< HEAD
 
 
 
@@ -160,10 +338,17 @@ int hit(card *cards, hand *hands, int topDeck,int playerNum){ // Deals the playe
 		hands[playerNum].bust = true;
 
 	return topDeck;
+=======
+>>>>>>> origin/The-Follicle
 }
+*/
+
+//<<<<<<< HEAD
 
 
-
+//=======
+/*
+>>>>>>> origin/The-Follicle
 int deal(card *cards, hand *hands, int players, int topDeck){ //Gives cards out to all the players in the game.Topdeck is supposed to be a way of referencing the top of the "stack", or deck.
 	for (int i = 0; i <= players - 1; i++){				   // The way topDeck is handled is currently pretty bad and should be improved.
 		topDeck = hit(cards, hands, topDeck, i);
@@ -172,6 +357,7 @@ int deal(card *cards, hand *hands, int players, int topDeck){ //Gives cards out 
 
 	return topDeck;
 }
+<<<<<<< HEAD
 
 int playerTurn(card *cards, hand *hands, int players, int topDeck){ // TBD
 
@@ -278,3 +464,6 @@ int main()
 	system("PAUSE");
 	return 0;
 }
+=======
+*/
+//>>>>>>> origin/The-Follicle
