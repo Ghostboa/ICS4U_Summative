@@ -43,7 +43,13 @@ struct playerCard {
     int value;
 };
 
-playerCard hand[80]; //hand[1].suit would return the suit of the first card in hand
+struct profile {
+    int numCards;
+    playerCard hand[11];
+    int money;
+};
+
+profile player[2];//initialization of dealer and hooman, will need to manually initialize later
 
 //__________________________________________________________________Basic Functions
 int rb(int min, int max) { // Magic random number thingy
@@ -82,7 +88,7 @@ int cardCheck (int suit, int value){ //returns whether a certain card is in play
     }
 }
 
-void hit(int player, int* hand){
+void hit(int player, int* suit, int* value){
 int tempSuit;
 int tempValue;
     do {
@@ -105,19 +111,19 @@ void deckReset (){
 void printCard(int suit, int value){
     switch (value){
     case 1:
-        printf("A%c\n", suit + 3);
+        printf("A%c", suit + 3);
         break;
     case 11:
-        printf("J%c\n", suit + 3);
+        printf("J%c", suit + 3);
         break;
     case 12:
-        printf("Q%c\n", suit + 3);
+        printf("Q%c", suit + 3);
         break;
     case 13:
-        printf("K%c\n", suit + 3);
+        printf("K%c", suit + 3);
         break;
     default:
-        printf("%i%c\n", value, suit);
+        printf("%i%c", value, suit);
         break;
     }
 }
@@ -127,17 +133,24 @@ void rules(){
     system ("PAUSE");
 }
 
-int deal(card *cards, hand *hands, int players, int topDeck){ //Gives cards out to all the players in the game.Topdeck is supposed to be a way of referencing the top of the "stack", or deck.
-	for (int i = 0; i <= players - 1; i++){				   // The way topDeck is handled is currently pretty bad and should be improved.
-		hands[i].playerCard[0].value = cards[topDeck].value;
-		hands[i].playerCard[0].suit = cards[topDeck].suit;
-		topDeck++;
-		hands[i].playerCard[1].value = cards[topDeck].value;
-		hands[i].playerCard[1].suit = cards[topDeck].suit;
-		topDeck++;
-	}
+void deal (int numPlayers){
+    for (int i = numPlayers; i <=0; i--)
+        for (int j = 0; j >=2; j++)
+            hit(i, &player[i].hand[j].suit, &player[i].hand[j].value);
+}
 
-	return topDeck;
+void display (int numPlayers){
+    printf ("Dealer\t");
+    for (int i = 1; i <= numPlayers; i++){
+        printf ("player%i\t",i);
+    }
+    printf ("\n");
+    for (int i = 0; i <= numPlayers; i++){
+        for (int j = 0; j <= player[i].numCards; j++)
+            printCard(player[i].hand[j].suit, player[i].hand[j].value);
+    printf ("\t");
+    }
+    printf ("\n");
 }
 
 //__________________________________________________________________Menu and Directories
@@ -155,33 +168,22 @@ int startMenu(){ // the menu.
 	return user;
 }
 
-int startGame(card *cards){ // Screw non-dealer AI for now, just the dealer and the player...
-	hand hands[4];
-	int topDeck = 0;		// The master game thing which calls all the other game functions.
+int mainGame(){
 
-//	shuffle(&cards[0]);
-	printCard(&cards[0]);
+    deckReset();
 
-	topDeck = deal(cards, &hands[0], 2, topDeck);
-	printf("Player one has ");
-	printCard(&hands[0].playerCard[0]);
-	printCard(&hands[0].playerCard[1]);
+    //need function to get number of players (currently set to 2)
+    deal(2);
 
-    printf ("reached end of startgame\n");
+    display(2);
+
     system ("PAUSE");
 	return 0;
 }
 
 int main()
 {
-	card cards[maxCards];
-
-    ////////////////////////////////////////
 	srand(time(NULL)); // Seeding the thing
-	startCards(&cards[0]);
-	printCard(&cards[0]);
-	//we only need this once they start the game? otherwise it's just a waste?
-	////////////////////////////////////////
 
     while (1){
         switch (startMenu()){
@@ -190,7 +192,7 @@ int main()
             break;
 
         case (1) :
-            startGame(&cards[0]);
+            mainGame();
             break;
 
         case (2) :
@@ -285,5 +287,20 @@ void printCard(card *cards){ // Function that prints cards.
 		printf("%i%c\n", cards[0].value, cards[0].suit + 3);
 		break;
 	}
+}
+*/
+
+/*
+int deal(card *cards, hand *hands, int players, int topDeck){ //Gives cards out to all the players in the game.Topdeck is supposed to be a way of referencing the top of the "stack", or deck.
+	for (int i = 0; i <= players - 1; i++){				   // The way topDeck is handled is currently pretty bad and should be improved.
+		hands[i].playerCard[0].value = cards[topDeck].value;
+		hands[i].playerCard[0].suit = cards[topDeck].suit;
+		topDeck++;
+		hands[i].playerCard[1].value = cards[topDeck].value;
+		hands[i].playerCard[1].suit = cards[topDeck].suit;
+		topDeck++;
+	}
+
+	return topDeck;
 }
 */
