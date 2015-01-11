@@ -9,6 +9,16 @@ whether or not it's in play.*/
 //Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
 // Other cool stuff: Variable AI aggressiveness/Number of Players, number of cards, game records or login thing, actual betting, encrypted files, difficulty settings.
 
+/*
+The players' objective is to win money by creating card totals that turn out to be higher than the dealer's hand
+but do not exceed 21 ("busting"/"breaking"), or alternatively by allowing the dealer to take additional cards until they bust.
+On their turn, players must choose whether to
+"hit" (take a card)
+"stand" (end their turn)
+"double" (double wager, take a single card and finish)
+"split" (if the two cards have the same value, separate them to make two hands)
+"surrender" (give up a half-bet and retire from the game)
+*/
 
 //IMPORTANT NOTE: ACES ARE NOT HANDLED CORRECTLY YET!
 
@@ -37,7 +47,6 @@ struct cards{
 };
 
 cards deck; //two dimensional array, accessed by deck.Spades[1].played  (would return 1 or 0, depending on whether the ace of spades is in play)
-
 
 struct playerCard {
     int suit;
@@ -89,17 +98,42 @@ int cardCheck (int suit, int value){ //returns whether a certain card is in play
     }
 }
 
-void hit(int player, int* suit, int* value){
+void rules(){
+	printf("Example Rules\n");
+    system ("PAUSE");
+}
+
+//__________________________________________________________________Complex Functions
+void hit(int pNum, int* suit, int* value, int* numCards){
 int tempSuit;
 int tempValue;
     do {
         tempSuit = rand () % 3;
         tempValue = rand () % 12;
     }while (!cardCheck(tempSuit, tempValue));
+
+    //removal from deck (suits are annoying)
+    switch (tempSuit){
+    case 0:
+        deck.Spades[tempValue].played = 1;
+        break;
+    case 1:
+        deck.Hearts[tempValue].played = 1;
+        break;
+    case 2:
+        deck.Diamonds[tempValue].played = 1;
+        break;
+    case 3:
+        deck.Clubs[tempValue].played = 1;
+        break;
+    }
+
+    player[pNum].numCards ++;
+    player[pNum].hand[*numCards].suit;
+    player[pNum].hand[*numCards].value;
     //need to remove card from deck, place in player's hand
 }
 
-//__________________________________________________________________Complex Functions
 void deckReset (){
 	for (int i = 0; i <= 13; i++){
 	    deck.Spades[i].played = 0;
@@ -110,6 +144,7 @@ void deckReset (){
 }
 
 void printCard(int suit, int value){
+    printf ("%i, %i\n", suit, value);
     switch (value){
     case 1:
         printf("A%c", suit + 3);
@@ -129,18 +164,14 @@ void printCard(int suit, int value){
     }
 }
 
-void rules(){
-	printf("Example Rules\n");
-    system ("PAUSE");
-}
-
 void deal (int numPlayers){
     for (int i = numPlayers; i <=0; i--)
         for (int j = 0; j >=2; j++)
-            hit(i, &player[i].hand[j].suit, &player[i].hand[j].value);
+            hit(i, &player[i].hand[j].suit, &player[i].hand[j].value, &player[i].numCards);
 }
 
 void display (int numPlayers){
+    //printf ("%i, %i", player[0].hand[0].suit, player[0].hand[0].value); debug stuff
     printf ("Dealer\t");
     for (int i = 1; i <= numPlayers; i++){
         printf ("player%i\t",i);
@@ -178,12 +209,12 @@ int mainGame(){
 
     display(2);
 
+
     system ("PAUSE");
 	return 0;
 }
 
-int main()
-{
+int main(){
 	srand(time(NULL)); // Seeding the thing
 
     while (1){
