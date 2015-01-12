@@ -50,12 +50,14 @@ cards deck; //two dimensional array, accessed by deck.Spades[1].played  (would r
 struct playerCard {
 	int suit;
 	int value;
+	int counter;
 };
 
 struct profile {
 	int numCards;
 	playerCard hand[11];
 	int money;
+	int total;
 };
 
 profile player[2];//initialization of dealer and hooman, will need to manually initialize later
@@ -110,7 +112,7 @@ void hit(int pNum, int* suit, int* value, int* numCards){
 
 	do {
 		tempSuit = rand() % 3;
-		tempValue = rand() % 12;
+		tempValue = rb(1,13);
 	} while (cardCheck(tempSuit, tempValue) == true);
 
 	//removal from deck (suits are annoying)
@@ -131,16 +133,35 @@ void hit(int pNum, int* suit, int* value, int* numCards){
 	
 	player[pNum].hand[*numCards].suit = tempSuit;
 	player[pNum].hand[*numCards].value = tempValue;
+	
+	if (tempValue >= 10) // Assigning the count to the players hand.
+		player[pNum].hand[*numCards].counter = 10;
+	else if (tempValue == 1){
+		if (player[pNum].total >=11) // For Aces! 
+			player[pNum].hand[*numCards].counter = 1;
+		else 
+			player[pNum].hand[*numCards].counter = 11;
+	}
+	else{
+		player[pNum].hand[*numCards].counter = tempValue;
+	}
+
+	player[pNum].total = player[pNum].total + player[pNum].hand[*numCards].counter;
 	player[pNum].numCards++;
 	//need to remove card from deck, place in player's hand
 }
 
-void deckReset(){
-	for (int i = 0; i <= 13; i++){
+void deckReset(int numPlayers){
+	for (int i = 0; i <= 13; i++){ // There's no Spades[13].... How does this not break?
 		deck.Spades[i].played = 0;
 		deck.Hearts[i].played = 0;
 		deck.Diamonds[i].played = 0;
 		deck.Clubs[i].played = 0;
+	}
+
+	for (int i = 0; i < numPlayers; i++){
+		player[i].numCards = 0;
+		player[i].total = 0;
 	}
 }
 
@@ -180,9 +201,41 @@ void display(int numPlayers){
 	for (int i = 0; i < numPlayers; i++){
 		for (int j = 0; j < player[i].numCards; j++)
 			printCard(player[i].hand[j].suit, player[i].hand[j].value);
+		printf(" Count: %i", player[i].total);
 		printf("\t");
 	}
 	printf("\n");
+}
+
+void saveGame(int numPlayers){
+	FILE *fp;
+
+	printf("Which slot would you like to save in? (1-3) \n");
+	int slot = getNum(1, 3);
+
+	if (slot == 1) // Perhaps this should be changed to allow for file name variation (Constants.)
+		fp = fopen("Save1.txt","w");
+	else if (slot == 2)
+		fp = fopen("Save2.txt", "w");
+	else if (slot == 3)
+		fp = fopen("Save3.txt", "w");
+	else //This really should not happen
+		fp = fopen("Save1.txt", "w");
+
+	if (fp){
+		for (int i = 0; i < numPlayers; i++){
+			fprintf(fp, "Player %i: \n", i + 1);
+			for (int k = 0; k < player[i].numCards; k++){
+				fprintf(fp, "%i/%i ", player[i].hand[k].value, player[i].hand[k].suit);
+			}
+			fprintf(fp,"\n");
+			fprintf(fp, "Count: %i", player[i].total);
+			fprintf(fp, "\n\n");
+		}
+
+		fclose(fp);
+	}
+
 }
 
 //__________________________________________________________________Menu and Directories
@@ -202,13 +255,14 @@ int startMenu(){ // the menu.
 
 int mainGame(){
 
-	deckReset();
+	deckReset(2);
 
 	//need function to get number of players (currently set to 2)
 	deal(2);
 
 	display(2);
 
+	saveGame(2);
 
 	system("PAUSE");
 	return 0;
