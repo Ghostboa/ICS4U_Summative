@@ -108,11 +108,16 @@ void AI (profile*AI){
     if (*AI.money < 1)
         //surrender
     while (!stand){
-        if(*AI.hand + *AI.fucklenuts > 21)
+        if(*AI.total + *AI.fucklenuts > 21)
             stand = 1;
         else
             //hit
     }
+}
+
+void dealer (profile*dealer){
+        while (dealer.total < 18)
+            //hit
 }
 
 void hit(int pNum, int* suit, int* value, int* numCards){
