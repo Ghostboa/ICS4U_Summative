@@ -1,9 +1,3 @@
-/*
-I'm not sure we actually need to initalize the deck. We can just generate a card when we need one,
-and check it against the other cards in play to make sure there are no duplicates. Otherwise,
-we should have an in-play / not-in-play boolean-esque variable in the card struct to determine
-whether or not it's in play.*/
-
 // Blackjack beginning.cpp : Defines the entry point for the console application.
 
 //Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
@@ -50,7 +44,7 @@ cards deck; //two dimensional array, accessed by deck.Spades[1].played  (would r
 struct playerCard {
 	int suit;
 	int value;
-	int counter;
+	int counter; // what is this for?
 };
 
 struct profile {
@@ -58,9 +52,12 @@ struct profile {
 	playerCard hand[11];
 	int money;
 	int total;
+	int fucklenuts;
 };
 
-profile player[2];//initialization of dealer and hooman, will need to manually initialize later
+profile player[4];//initialization of dealer and hooman, will need to manually initialize later
+
+//making space for 2 AIs
 
 //__________________________________________________________________Basic Functions
 int rb(int min, int max) { // Magic random number thingy
@@ -105,6 +102,19 @@ void rules(){
 }
 
 //__________________________________________________________________Complex Functions
+void AI (profile*AI){
+    int stand = 0;
+
+    if (*AI.money < 1)
+        //surrender
+    while (!stand){
+        if(*AI.hand + *AI.fucklenuts > 21)
+            stand = 1;
+        else
+            //hit
+    }
+}
+
 void hit(int pNum, int* suit, int* value, int* numCards){
 	int tempSuit;
 	int tempValue;
@@ -130,16 +140,16 @@ void hit(int pNum, int* suit, int* value, int* numCards){
 		deck.Clubs[tempValue].played = 1;
 		break;
 	}
-	
+
 	player[pNum].hand[*numCards].suit = tempSuit;
 	player[pNum].hand[*numCards].value = tempValue;
-	
+
 	if (tempValue >= 10) // Assigning the count to the players hand.
 		player[pNum].hand[*numCards].counter = 10;
 	else if (tempValue == 1){
-		if (player[pNum].total >=11) // For Aces! 
+		if (player[pNum].total >=11) // For Aces!
 			player[pNum].hand[*numCards].counter = 1;
-		else 
+		else
 			player[pNum].hand[*numCards].counter = 11;
 	}
 	else{
