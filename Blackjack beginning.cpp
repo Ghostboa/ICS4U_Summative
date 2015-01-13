@@ -211,18 +211,23 @@ void deal(int numPlayers){
 
 void display(int numPlayers){
 	//printf ("%i, %i", player[0].hand[0].suit, player[0].hand[0].value); debug stuff
-	printf("Dealer\t");
+	printf("Dealer\t\t");
 	for (int i = 1; i < numPlayers; i++){
-		printf("player%i\t", i);
+		printf("player%i\t\t", i);
 	}
 	printf("\n");
 	for (int i = 0; i < numPlayers; i++){
 		for (int j = 0; j < player[i].numCards; j++)
 			printCard(player[i].hand[j].suit, player[i].hand[j].value);
-		printf(" Count: %i", player[i].total);
-		printf("\t");
+		printf("\t\t");
 	}
 	printf("\n");
+    for (int i = 0; i < numPlayers; i++){
+		printf("Total: %i\t", player[i].total);
+	}
+	printf("\n");
+
+
 }
 
 void saveGame(int numPlayers){
