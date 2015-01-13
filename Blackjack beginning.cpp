@@ -47,7 +47,7 @@ struct playerCard {
 	int counter; // what is this for?
 };
 
-struct profile {
+struct Profile {
 	int numCards;
 	playerCard hand[11];
 	int money;
@@ -55,7 +55,7 @@ struct profile {
 	int fucklenuts;
 };
 
-profile player[4];//initialization of dealer and hooman, will need to manually initialize later
+Profile player[4];//initialization of dealer and hooman, will need to manually initialize later
 
 //making space for 2 AIs
 
@@ -102,7 +102,8 @@ void rules(){
 }
 
 //__________________________________________________________________Complex Functions
-void AI (profile*AI){
+/*
+void AI (Profile*AI){
     int stand = 0;
 
     if (*AI.money < 1)
@@ -115,12 +116,14 @@ void AI (profile*AI){
     }
 }
 
-void dealer (profile*dealer){
+
+void dealer (Profile*dealer){
         while (dealer.total < 18)
             //hit
 }
+*/
 
-void hit(int pNum, int* suit, int* value, int* numCards){
+void hit(cards deck, Profile player[], int pNum){
 	int tempSuit;
 	int tempValue;
 
@@ -146,22 +149,22 @@ void hit(int pNum, int* suit, int* value, int* numCards){
 		break;
 	}
 
-	player[pNum].hand[*numCards].suit = tempSuit;
-	player[pNum].hand[*numCards].value = tempValue;
+	player[pNum].hand[(player[pNum].numCards)].suit = tempSuit;
+	player[pNum].hand[(player[pNum].numCards)].value = tempValue;
 
 	if (tempValue >= 10) // Assigning the count to the players hand.
-		player[pNum].hand[*numCards].counter = 10;
+		player[pNum].hand[(player[pNum].numCards)].counter = 10;
 	else if (tempValue == 1){
 		if (player[pNum].total >=11) // For Aces!
-			player[pNum].hand[*numCards].counter = 1;
+			player[pNum].hand[(player[pNum].numCards)].counter = 1;
 		else
-			player[pNum].hand[*numCards].counter = 11;
+			player[pNum].hand[(player[pNum].numCards)].counter = 11;
 	}
 	else{
-		player[pNum].hand[*numCards].counter = tempValue;
+		player[pNum].hand[(player[pNum].numCards)].counter = tempValue;
 	}
 
-	player[pNum].total = player[pNum].total + player[pNum].hand[*numCards].counter;
+	player[pNum].total += player[pNum].hand[(player[pNum].numCards)].counter;
 	player[pNum].numCards++;
 	//need to remove card from deck, place in player's hand
 }
@@ -203,7 +206,7 @@ void printCard(int suit, int value){
 void deal(int numPlayers){
 	for (int i = numPlayers-1; i >= 0; i--)
 		for (int j = 0; j <= 1; j++)
-			hit(i, &player[i].hand[j].suit, &player[i].hand[j].value, &player[i].numCards);
+			hit(deck, player, i);
 }
 
 void display(int numPlayers){
