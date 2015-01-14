@@ -23,23 +23,18 @@ On their turn, players must choose whether to
 #define MAX_PLAYERS 2
 
 //__________________________________________________________________Structures and Constants
-int const maxCards = 52; //#define maxCards 52
+const int maxCards = 52; //#define maxCards 52
 
 enum suits { Spades, Hearts, Diamonds, Clubs };
 
-//Deck Proposition
-struct inPlay{
-	bool played;
-};
-
 struct Cards{
-	inPlay Spades[13]; // This array actually goes 0-12. The previous one only had 12 elements, or 48 cards. Oops.
-	inPlay Hearts[13];
-	inPlay Diamonds[13];
-	inPlay Clubs[13];
+	bool Spades[13]; // This array actually goes 0-12. The previous one only had 12 elements, or 48 cards. Oops.
+	bool Hearts[13];
+	bool Diamonds[13];
+	bool Clubs[13];
 };
 
-struct playerCard {
+struct PlayerCard {
 	int suit;
 	int value;
 	int counter; // what is this for?
@@ -47,7 +42,7 @@ struct playerCard {
 
 struct Profile {
 	int numCards;
-	playerCard hand[11];
+	PlayerCard hand[11];
 	int money;
 	int total;
 	int fucklenuts;
@@ -56,11 +51,11 @@ struct Profile {
 //making space for 2 AIs
 
 //__________________________________________________________________Basic Functions
-int rb(int min, int max) { // Magic random number thingy
+int rb(const int min, const int max) { // Magic random number thingy
 	return rand() % (max - min + 1) + min;
 }
 
-int getNum(int lo, int hi){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
+int getNum(const int lo, const int hi){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
 	//good for invalid answer prevention
 	int num = 0;
 
@@ -71,24 +66,16 @@ int getNum(int lo, int hi){ // Thing Wilson likes to have to get a number betwee
 	return num;
 }
 
-void swap(int a, int b){ //swaps two elements
-	int temp;
-
-	temp = a;
-	a = b;
-	b = temp;
-}
-
-bool cardCheck(Cards *deck, int suit, int value){ //returns whether a certain card is in play (1 is in play, 0 is in deck)
+bool cardCheck(Cards &deck, int suit, int value){ //returns whether a certain card is in play (1 is in play, 0 is in deck)urbadkid
 	switch (suit){
 	case 0:
-		return deck[0].Spades[value].played;
+		return deck.Spades[value];
 	case 1:
-		return deck[0].Hearts[value].played;
+		return deck.Hearts[value];
 	case 2:
-		return deck[0].Diamonds[value].played;
+		return deck.Diamonds[value];
 	case 3:
-		return deck[0].Clubs[value].played;
+		return deck.Clubs[value];
 	}
 }
 
@@ -124,7 +111,7 @@ while (dealer.total < 18)
 }
 */
 
-void hit(Cards *deck, Profile* player, int pNum){
+void hit(Cards &deck, Profile* player, int pNum){
 	int tempSuit;
 	int tempValue;
 
@@ -136,16 +123,16 @@ void hit(Cards *deck, Profile* player, int pNum){
 	//removal from deck (suits are annoying)
 	switch (tempSuit){
 	case 0:
-		deck[0].Spades[tempValue].played = 1;
+		deck.Spades[tempValue]= 1;
 		break;
 	case 1:
-		deck[0].Hearts[tempValue].played = 1;
+		deck.Hearts[tempValue]= 1;
 		break;
 	case 2:
-		deck[0].Diamonds[tempValue].played = 1;
+		deck.Diamonds[tempValue]= 1;
 		break;
 	case 3:
-		deck[0].Clubs[tempValue].played = 1;
+		deck.Clubs[tempValue]= 1;
 		break;
 	}
 
@@ -169,12 +156,12 @@ void hit(Cards *deck, Profile* player, int pNum){
 	//need to remove card from deck, place in player's hand
 }
 
-void deckReset(Cards *deck, Profile* player, int numPlayers){
+void deckReset(Cards &deck, Profile* player, int numPlayers){
 	for (int i = 0; i <= 12; i++){
-		deck[0].Spades[i].played = 0;
-		deck[0].Hearts[i].played = 0;
-		deck[0].Diamonds[i].played = 0;
-		deck[0].Clubs[i].played = 0;
+		deck.Spades[i]= 0;
+		deck.Hearts[i]= 0;
+		deck.Diamonds[i]= 0;
+		deck.Clubs[i] = 0;
 	}
 
 	for (int i = 0; i <= numPlayers; i++){
@@ -203,10 +190,10 @@ void printCard(int suit, int value){
 	}
 }
 
-void deal(Cards *deck, Profile* player, int numPlayers){
+void deal(Cards &deck, Profile* player, int numPlayers){
 	for (int i = 0; i < numPlayers; i++)
 		for (int j = 0; j < 2; j++){
-		hit(deck, player, i);
+            hit(deck, player, i);
 		}
 }
 
@@ -277,8 +264,8 @@ int startMenu(){ // the menu.
 }
 
 int mainGame(Cards *deck, Profile* player, int numPlayers){
-	deckReset(deck, player, numPlayers);
-	deal(deck, player, numPlayers);
+	deckReset(*deck, player, numPlayers);
+	deal(*deck, player, numPlayers);
 	display(player, numPlayers);
 	saveGame(player, numPlayers);
 	system("PAUSE");
