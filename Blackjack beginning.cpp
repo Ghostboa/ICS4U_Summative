@@ -90,26 +90,26 @@ int getNumPlayers (){
 }
 
 //__________________________________________________________________Complex Functions
-/*
-void AI (Profile*AI){
-int stand = 0;
 
-if (*AI.money < 1)
-//surrender
-while (!stand){
-if(*AI.total + *AI.fucklenuts > 21)
-stand = 1;
-else
-//hit
+void AI (Profile*AI){
+    int stand = 0;
+
+    if (*AI.money < 1)
+        //surrender
+    while (!stand){
+        if(*AI.total + *AI.fucklenuts > 21)
+            stand = 1;
+        else
+            //hit(deck, )
 }
 }
 
 
 void dealer (Profile*dealer){
-while (dealer.total < 18)
-//hit
+    while (dealer.total < 18)
+        //hit
 }
-*/
+
 
 void hit(Cards &deck, Profile* player, int pNum){
 	int tempSuit;
