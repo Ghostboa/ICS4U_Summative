@@ -119,7 +119,7 @@ while (dealer.total < 18)
 }
 */
 
-void hit(Cards *deck, Profile* player, int pNum){
+void hit(Cards *deck, Profile* player){
 	int tempSuit;
 	int tempValue;
 
@@ -144,11 +144,11 @@ void hit(Cards *deck, Profile* player, int pNum){
 		break;
 	}
 
-	player[pNum].hand[(player[pNum].numCards)].suit = tempSuit;
-	player[pNum].hand[(player[pNum].numCards)].value = tempValue;
+	player -> hand[player -> numCards].suit = tempSuit;
+	player -> hand[player -> numCards].value = tempValue;
 
 	if (tempValue >= 10) // Assigning the count to the players hand.
-		player[pNum].hand[(player[pNum].numCards)].counter = 10;
+		player.hand[(player.numCards)].counter = 10;
 	else if (tempValue == 1){
 		if (player[pNum].total >= 11) // For Aces!
 			player[pNum].hand[(player[pNum].numCards)].counter = 1;
@@ -256,6 +256,16 @@ void saveGame(Profile* player, int numPlayers){
 
 }
 
+void round (Cards* deck, Profile* player, int numPlayers){
+    int userIn;
+    for (int i = 0; i < numPlayers; i++){
+        do{
+            printf ("Would you like to\n1 - hit\n2 - stand?");
+            scanf ("%i",&userIn);
+        }while (userIn != 2);
+    }
+}
+
 //__________________________________________________________________Menu and Directories
 int startMenu(){ // the menu.
 	//Made this clear both before AND after, and have a pretty (subjective) title
@@ -271,13 +281,12 @@ int startMenu(){ // the menu.
 	return user;
 }
 
-int mainGame(Cards *deck, Profile* player, int numPlayers){
+void mainGame(Cards *deck, Profile* player, int numPlayers){
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
 	display(player, numPlayers);
 	saveGame(player, numPlayers);
-	system("PAUSE");
-	return 0;
+	round (deck, player, numPlayers);
 }
 
 int main(){
