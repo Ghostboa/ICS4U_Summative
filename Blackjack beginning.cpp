@@ -97,6 +97,11 @@ void rules(){
 	system("PAUSE");
 }
 
+int getNumPlayers (){
+	printf("Input number of players, including dealer\n");
+	return getNum(2, MAX_PLAYERS);
+}
+
 //__________________________________________________________________Complex Functions
 /*
 void AI (Profile*AI){
@@ -272,10 +277,7 @@ int startMenu(){ // the menu.
 }
 
 int mainGame(Cards *deck, Profile* player, int numPlayers){
-
 	deckReset(deck, player, numPlayers);
-
-	//need function to get number of players (currently set to 2)
 	deal(deck, player, numPlayers);
 	display(player, numPlayers);
 	saveGame(player, numPlayers);
@@ -284,11 +286,12 @@ int mainGame(Cards *deck, Profile* player, int numPlayers){
 }
 
 int main(){
-	srand(time(NULL)); // Seeding the thing
-	Cards deck; //two dimensional array, accessed by deck.Spades[1].played  (would return 1 or 0, depending on whether the ace of spades is in play)
-	Profile player[4];//initialization of dealer and hooman, will need to manually initialize later
-	printf("Input number of players");
-	int numPlayers = getNum(2, MAX_PLAYERS);
+    //setup required structs and seeding pre-game
+	int numPlayers = getNumPlayers();
+    Profile player[numPlayers];
+    Cards deck;
+    srand(time(NULL)); // Seeding the thing
+
 
 	while (1){
 		switch (startMenu()){
