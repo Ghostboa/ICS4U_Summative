@@ -27,16 +27,11 @@ int const maxCards = 52; //#define maxCards 52
 
 enum suits { Spades, Hearts, Diamonds, Clubs };
 
-//Deck Proposition
-struct inPlay{
-	bool played;
-};
-
 struct Cards{
-	inPlay Spades[13]; // This array actually goes 0-12. The previous one only had 12 elements, or 48 cards. Oops.
-	inPlay Hearts[13];
-	inPlay Diamonds[13];
-	inPlay Clubs[13];
+	bool Spades[13]; // This array actually goes 0-12. The previous one only had 12 elements, or 48 cards. Oops.
+	bool Hearts[13];
+	bool Diamonds[13];
+	bool Clubs[13];
 };
 
 struct playerCard {
@@ -82,13 +77,13 @@ void swap(int a, int b){ //swaps two elements
 bool cardCheck(Cards *deck, int suit, int value){ //returns whether a certain card is in play (1 is in play, 0 is in deck)
 	switch (suit){
 	case 0:
-		return deck[0].Spades[value].played;
+		return deck[0].Spades[value];
 	case 1:
-		return deck[0].Hearts[value].played;
+		return deck[0].Hearts[value];
 	case 2:
-		return deck[0].Diamonds[value].played;
+		return deck[0].Diamonds[value];
 	case 3:
-		return deck[0].Clubs[value].played;
+		return deck[0].Clubs[value];
 	}
 }
 
@@ -136,16 +131,16 @@ void hit(Cards *deck, Profile* player, int pNum){
 	//removal from deck (suits are annoying)
 	switch (tempSuit){
 	case 0:
-		deck[0].Spades[tempValue].played = 1;
+		deck[0].Spades[tempValue] = 1;
 		break;
 	case 1:
-		deck[0].Hearts[tempValue].played = 1;
+		deck[0].Hearts[tempValue] = 1;
 		break;
 	case 2:
-		deck[0].Diamonds[tempValue].played = 1;
+		deck[0].Diamonds[tempValue] = 1;
 		break;
 	case 3:
-		deck[0].Clubs[tempValue].played = 1;
+		deck[0].Clubs[tempValue] = 1;
 		break;
 	}
 
@@ -171,10 +166,10 @@ void hit(Cards *deck, Profile* player, int pNum){
 
 void deckReset(Cards *deck, Profile* player, int numPlayers){
 	for (int i = 0; i <= 12; i++){
-		deck[0].Spades[i].played = 0;
-		deck[0].Hearts[i].played = 0;
-		deck[0].Diamonds[i].played = 0;
-		deck[0].Clubs[i].played = 0;
+		deck[0].Spades[i] = 0;
+		deck[0].Hearts[i] = 0;
+		deck[0].Diamonds[i] = 0;
+		deck[0].Clubs[i] = 0;
 	}
 
 	for (int i = 0; i <= numPlayers; i++){
