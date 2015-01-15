@@ -1,8 +1,17 @@
 Player 1: 
+<<<<<<< HEAD
 8/2 7/2 5/2 
 Count: 20
 
 Player 2: 
 11/0 2/2 13/1 
 Count: 26
+=======
+12/0 6/2 
+Count: 16
+
+Player 2: 
+13/2 4/0 2/2 3/0 
+Count: 19
+>>>>>>> origin/master
 
