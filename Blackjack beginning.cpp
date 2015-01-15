@@ -163,27 +163,27 @@ void hit(Cards *deck, Profile* player){
 		break;
 	}
 
-    switch (tempValue){
-        case 1:
-            if ((player -> total) <= 10)
-                player -> hand[player -> numCards].counter = 11;
-            else
-                player -> hand[player -> numCards].counter = 1;
-            break;
-//        case 11,12,13:
-//            player -> hand[player -> numCards.counter = 10;
-//            break;
-        default:
-            player -> hand[player -> numCards].counter = tempValue;
-            break;
+    if (tempValue == 1){
+        if (player -> total <= 10){
+            player -> hand[player -> numCards].counter = 11;
+        }
+        else{
+            player -> hand[player -> numCards].counter = 1;
+        }
     }
+    else if (tempValue > 10){
+            player -> hand[player -> numCards].counter = 10;
+    }
+    else{
+        player -> hand[player -> numCards].counter = tempValue;
+    }
+
 	player -> total += player -> hand[(player -> numCards)].counter;
 
 	player -> hand[player -> numCards].suit = tempSuit;
-	player -> hand[player -> numCards].value = temhit(*deck, *AI);pValue;
-
+	player -> hand[player -> numCards].value = tempValue;
 	player -> numCards++;
-	//need to remove card from deck, place in player's hand
+
     }
     else{
         printf ("Miss");
@@ -286,21 +286,21 @@ void saveGame(Profile* player, int numPlayers){
 
 void round (Cards* deck, Profile* player, int numPlayers){
     int userIn;
-    for (int i = 0; i < numPlayers;){
-            display(player, numPlayers);
-            printf ("Player %i, would you like to\n1 - stand\n2 - hit?\n", i);
-            userIn = getNum(1,2);
-            switch (userIn){
-                case 1:
-                    i++;
-                    break;
-                case 2:
-                    hit (deck, &player[i]);
-                    break;
-            }
+    for (int i = 1; i < numPlayers;){
+        display(player, numPlayers);
+        printf ("Player %i, would you like to\n1 - stand\n2 - hit?\n3 - Save\n", i);
+        userIn = getNum(1,3);
+            if (userIn ==1 || player[i].total >= 21)
+                i++;
+            else if (userIn == 2)
+                hit (deck, &player[i]);
+            else if (userIn == 3)
+                saveGame(player, numPlayers);
+                }
+    printf ("End of Round");
+    system ("PAUSE\n");
     }
-}
-*/
+
 //__________________________________________________________________Menu and Directories
 int startMenu(){
 	int user = 100;
@@ -319,7 +319,6 @@ void mainGame(Cards *deck, Profile* player, int numPlayers){
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
     round (deck, player, numPlayers);
-	saveGame(player, numPlayers);
 }
 
 int main(){
