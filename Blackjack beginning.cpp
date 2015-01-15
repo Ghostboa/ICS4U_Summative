@@ -88,8 +88,21 @@ bool cardCheck(Cards *deck, int suit, int value){ //returns whether a certain ca
 }
 
 void rules(){
-	printf("Example Rules\n");
+    printf("RULES:\n");
+	printf("Blackjack is the most DANK game on PC! I've learned how to collect SWAG DOLLAS \nfrom Bigley by harnessing the Illuminatis card counters and 360 noscoping the \ndealer! MY review of Blackjack is 8/8, no b8 m8. Hehv fun! Huehuehuehuehuehue.\n");
 	system("PAUSE");
+    /*
+	printf("RULES:\n");
+	printf("The goal of Blackjack is to have the highest hand without exceeding a total value of 21.\n");
+	printf("Every player is dealt two cards.\n");
+	printf("Every player can do two things: hit and stand.\n");
+	printf("If you 'hit', you get another card.\n");
+	printf("If you 'stand' then you are doing taking cards.\n");
+	printf("If you hit and it ushes the value of your hand over 21, then you are out for that round.\n");
+	printf("The dealer goes first, and hits himself until he has a hand of 18 or over.\n");
+	printf("Everybody else can choose to hit or stand as they wish.\n");
+	system("PAUSE");
+	*/
 }
 
 int getNumPlayers (){
@@ -103,7 +116,7 @@ void addCard (Profile* player, int tempSuit, int tempValue){
 }
 //__________________________________________________________________Complex Functions
 /*
-void AI (Profile*AI){
+void AI (Cards *deck, Profile*AI){
     int stand = 0;
 
     if (*AI.money < 1)
@@ -112,16 +125,17 @@ void AI (Profile*AI){
         if(*AI.total + *AI.fucklenuts > 21)
             stand = 1;
         else
-            //hit(deck, )
+            hit(*deck, *AI);
 }
 }
 
 
 void dealer (Profile*dealer){
     while (dealer.total < 18)
-        //hit
+       hit(*deck, *dealer);
 }
 */
+
 
 void hit(Cards *deck, Profile* player){
     if (player -> total < 21){
@@ -166,7 +180,7 @@ void hit(Cards *deck, Profile* player){
 	player -> total += player -> hand[(player -> numCards)].counter;
 
 	player -> hand[player -> numCards].suit = tempSuit;
-	player -> hand[player -> numCards].value = tempValue;
+	player -> hand[player -> numCards].value = temhit(*deck, *AI);pValue;
 
 	player -> numCards++;
 	//need to remove card from deck, place in player's hand
@@ -286,7 +300,7 @@ void round (Cards* deck, Profile* player, int numPlayers){
             }
     }
 }
-
+*/
 //__________________________________________________________________Menu and Directories
 int startMenu(){
 	int user = 100;
