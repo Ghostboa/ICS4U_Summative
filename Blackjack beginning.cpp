@@ -97,6 +97,10 @@ int getNumPlayers (){
 	return getNum(2, MAX_PLAYERS);
 }
 
+void addCard (Profile* player, int tempSuit, int tempValue){
+	player -> hand[player -> numCards].suit = tempSuit;
+	player -> hand[player -> numCards].value = tempValue;
+}
 //__________________________________________________________________Complex Functions
 /*
 void AI (Profile*AI){
@@ -120,6 +124,7 @@ while (dealer.total < 18)
 */
 
 void hit(Cards *deck, Profile* player){
+    if (player -> total < 21){
 	int tempSuit;
 	int tempValue;
 
@@ -144,24 +149,28 @@ void hit(Cards *deck, Profile* player){
 		break;
 	}
 
-	player -> hand[player -> numCards].suit = tempSuit;
-	player -> hand[player -> numCards].value = tempValue;
+    switch (tempValue){
+        case 1:
+            if ((player -> total) <= 10)
+                player -> hand[player -> numCards].counter = 11;
+            else
+                player -> hand[player -> numCards].counter = 1;
+            break;
+//        case 11,12,13:
+//            player -> hand[player -> numCards.counter = 10;
+//            break;
+        default:
+            player -> hand[player -> numCards].counter = tempValue;
+            break;
+    }
 
-	if (tempValue >= 10) // Assigning the count to the players hand.
-		player.hand[(player.numCards)].counter = 10;
-	else if (tempValue == 1){
-		if (player[pNum].total >= 11) // For Aces!
-			player[pNum].hand[(player[pNum].numCards)].counter = 1;
-		else
-			player[pNum].hand[(player[pNum].numCards)].counter = 11;
-	}
-	else{
-		player[pNum].hand[(player[pNum].numCards)].counter = tempValue;
-	}
-
-	player[pNum].total += player[pNum].hand[(player[pNum].numCards)].counter;
-	player[pNum].numCards++;
+	player -> total += player -> hand[(player -> numCards)].counter;
+	player -> numCards++;
 	//need to remove card from deck, place in player's hand
+    }
+    else{
+        printf ("Miss");
+    }
 }
 
 void deckReset(Cards *deck, Profile* player, int numPlayers){
@@ -201,11 +210,12 @@ void printCard(int suit, int value){
 void deal(Cards *deck, Profile* player, int numPlayers){
 	for (int i = 0; i < numPlayers; i++)
 		for (int j = 0; j < 2; j++){
-		hit(deck, player, i);
+            hit(deck, &player[j]);
 		}
 }
 
 void display(Profile* player, int numPlayers){
+    system("cls");
 	printf("Dealer\t\t");
 	for (int i = 1; i < numPlayers; i++){
 		printf("player%i\t\t", i);
@@ -260,15 +270,19 @@ void round (Cards* deck, Profile* player, int numPlayers){
     int userIn;
     for (int i = 0; i < numPlayers; i++){
         do{
-            printf ("Would you like to\n1 - hit\n2 - stand?");
-            scanf ("%i",&userIn);
-        }while (userIn != 2);
+            printf ("Would you like to\n1 - stand\n2 - hit?\n");
+            userIn = getNum(1,2);
+            switch (userIn){
+                case 2:
+                    hit (deck, &player[i]);
+            }
+            display(player, numPlayers);
+        }while (userIn != 1);
     }
 }
 
 //__________________________________________________________________Menu and Directories
-int startMenu(){ // the menu.
-	//Made this clear both before AND after, and have a pretty (subjective) title
+int startMenu(){
 	int user = 100;
 	system("cls");
 	printf("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
