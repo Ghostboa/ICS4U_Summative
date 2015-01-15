@@ -23,7 +23,7 @@ On their turn, players must choose whether to
 #define MAX_PLAYERS 2
 
 //__________________________________________________________________Structures and Constants
-int const maxCards = 52; //#define maxCards 52
+const int maxCards = 52; //#define maxCards 52
 
 enum suits { Spades, Hearts, Diamonds, Clubs };
 
@@ -34,7 +34,7 @@ struct Cards{
 	bool Clubs[13];
 };
 
-struct playerCard {
+struct PlayerCard {
 	int suit;
 	int value;
 	int counter; // what is this for?
@@ -42,7 +42,7 @@ struct playerCard {
 
 struct Profile {
 	int numCards;
-	playerCard hand[11];
+	PlayerCard hand[11];
 	int money;
 	int total;
 	int fucklenuts;
@@ -51,11 +51,11 @@ struct Profile {
 //making space for 2 AIs
 
 //__________________________________________________________________Basic Functions
-int rb(int min, int max) { // Magic random number thingy
+int rb(const int min, const int max) { // Magic random number thingy
 	return rand() % (max - min + 1) + min;
 }
 
-int getNum(int lo, int hi){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
+int getNum(const int lo, const int hi){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
 	//good for invalid answer prevention
 	int num = 0;
 
@@ -102,7 +102,7 @@ void addCard (Profile* player, int tempSuit, int tempValue){
 	player -> hand[player -> numCards].value = tempValue;
 }
 //__________________________________________________________________Complex Functions
-
+/*
 void AI (Profile*AI){
     int stand = 0;
 
@@ -121,7 +121,7 @@ void dealer (Profile*dealer){
     while (dealer.total < 18)
         //hit
 }
-
+*/
 
 void hit(Cards *deck, Profile* player){
     if (player -> total < 21){
@@ -163,8 +163,11 @@ void hit(Cards *deck, Profile* player){
             player -> hand[player -> numCards].counter = tempValue;
             break;
     }
-
 	player -> total += player -> hand[(player -> numCards)].counter;
+
+	player -> hand[player -> numCards].suit = tempSuit;
+	player -> hand[player -> numCards].value = tempValue;
+
 	player -> numCards++;
 	//need to remove card from deck, place in player's hand
     }
@@ -187,22 +190,22 @@ void deckReset(Cards *deck, Profile* player, int numPlayers){
 	}
 }
 
-void printCard(int suit, int value){
+void printCard(const int suit, const int value){
 	switch (value){
 	case 1:
-		printf("A%c", suit + 3);
+		printf("A%c ", suit + 3);
 		break;
 	case 11:
-		printf("J%c", suit + 3);
+		printf("J%c ", suit + 3);
 		break;
 	case 12:
-		printf("Q%c", suit + 3);
+		printf("Q%c ", suit + 3);
 		break;
 	case 13:
-		printf("K%c", suit + 3);
+		printf("K%c ", suit + 3);
 		break;
 	default:
-		printf("%i%c", value, suit + 3);
+		printf("%i%c ", value, suit + 3);
 		break;
 	}
 }
@@ -215,6 +218,7 @@ void deal(Cards *deck, Profile* player, int numPlayers){
 }
 
 void display(Profile* player, int numPlayers){
+
     system("cls");
 	printf("Dealer\t\t");
 	for (int i = 1; i < numPlayers; i++){
@@ -268,16 +272,18 @@ void saveGame(Profile* player, int numPlayers){
 
 void round (Cards* deck, Profile* player, int numPlayers){
     int userIn;
-    for (int i = 0; i < numPlayers; i++){
-        do{
-            printf ("Would you like to\n1 - stand\n2 - hit?\n");
+    for (int i = 0; i < numPlayers;){
+            display(player, numPlayers);
+            printf ("Player %i, would you like to\n1 - stand\n2 - hit?\n", i);
             userIn = getNum(1,2);
             switch (userIn){
+                case 1:
+                    i++;
+                    break;
                 case 2:
                     hit (deck, &player[i]);
+                    break;
             }
-            display(player, numPlayers);
-        }while (userIn != 1);
     }
 }
 
@@ -298,9 +304,8 @@ int startMenu(){
 void mainGame(Cards *deck, Profile* player, int numPlayers){
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
-	display(player, numPlayers);
+    round (deck, player, numPlayers);
 	saveGame(player, numPlayers);
-	round (deck, player, numPlayers);
 }
 
 int main(){
