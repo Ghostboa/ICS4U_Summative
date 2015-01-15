@@ -23,7 +23,7 @@ On their turn, players must choose whether to
 #define MAX_PLAYERS 2
 
 //__________________________________________________________________Structures and Constants
-const int maxCards = 52; //#define maxCards 52
+int const maxCards = 52; //#define maxCards 52
 
 enum suits { Spades, Hearts, Diamonds, Clubs };
 
@@ -34,7 +34,7 @@ struct Cards{
 	bool Clubs[13];
 };
 
-struct PlayerCard {
+struct playerCard {
 	int suit;
 	int value;
 	int counter; // what is this for?
@@ -42,7 +42,7 @@ struct PlayerCard {
 
 struct Profile {
 	int numCards;
-	PlayerCard hand[11];
+	playerCard hand[11];
 	int money;
 	int total;
 	int fucklenuts;
@@ -51,11 +51,11 @@ struct Profile {
 //making space for 2 AIs
 
 //__________________________________________________________________Basic Functions
-int rb(const int min, const int max) { // Magic random number thingy
+int rb(int min, int max) { // Magic random number thingy
 	return rand() % (max - min + 1) + min;
 }
 
-int getNum(const int lo, const int hi){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
+int getNum(int lo, int hi){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
 	//good for invalid answer prevention
 	int num = 0;
 
@@ -66,16 +66,24 @@ int getNum(const int lo, const int hi){ // Thing Wilson likes to have to get a n
 	return num;
 }
 
-bool cardCheck(Cards &deck, int suit, int value){ //returns whether a certain card is in play (1 is in play, 0 is in deck)urbadkid
+void swap(int a, int b){ //swaps two elements
+	int temp;
+
+	temp = a;
+	a = b;
+	b = temp;
+}
+
+bool cardCheck(Cards *deck, int suit, int value){ //returns whether a certain card is in play (1 is in play, 0 is in deck)
 	switch (suit){
 	case 0:
-		return deck.Spades[value];
+		return deck[0].Spades[value];
 	case 1:
-		return deck.Hearts[value];
+		return deck[0].Hearts[value];
 	case 2:
-		return deck.Diamonds[value];
+		return deck[0].Diamonds[value];
 	case 3:
-		return deck.Clubs[value];
+		return deck[0].Clubs[value];
 	}
 }
 
@@ -89,6 +97,10 @@ int getNumPlayers (){
 	return getNum(2, MAX_PLAYERS);
 }
 
+void addCard (Profile* player, int tempSuit, int tempValue){
+	player -> hand[player -> numCards].suit = tempSuit;
+	player -> hand[player -> numCards].value = tempValue;
+}
 //__________________________________________________________________Complex Functions
 
 void AI (Profile*AI){
@@ -111,7 +123,8 @@ void dealer (Profile*dealer){
 }
 
 
-void hit(Cards &deck, Profile* player, int pNum){
+void hit(Cards *deck, Profile* player){
+    if (player -> total < 21){
 	int tempSuit;
 	int tempValue;
 
@@ -123,45 +136,49 @@ void hit(Cards &deck, Profile* player, int pNum){
 	//removal from deck (suits are annoying)
 	switch (tempSuit){
 	case 0:
-		deck.Spades[tempValue]= 1;
+		deck[0].Spades[tempValue] = 1;
 		break;
 	case 1:
-		deck.Hearts[tempValue]= 1;
+		deck[0].Hearts[tempValue] = 1;
 		break;
 	case 2:
-		deck.Diamonds[tempValue]= 1;
+		deck[0].Diamonds[tempValue] = 1;
 		break;
 	case 3:
-		deck.Clubs[tempValue]= 1;
+		deck[0].Clubs[tempValue] = 1;
 		break;
 	}
 
-	player[pNum].hand[(player[pNum].numCards)].suit = tempSuit;
-	player[pNum].hand[(player[pNum].numCards)].value = tempValue;
+    switch (tempValue){
+        case 1:
+            if ((player -> total) <= 10)
+                player -> hand[player -> numCards].counter = 11;
+            else
+                player -> hand[player -> numCards].counter = 1;
+            break;
+//        case 11,12,13:
+//            player -> hand[player -> numCards.counter = 10;
+//            break;
+        default:
+            player -> hand[player -> numCards].counter = tempValue;
+            break;
+    }
 
-	if (tempValue >= 10) // Assigning the count to the players hand.
-		player[pNum].hand[(player[pNum].numCards)].counter = 10;
-	else if (tempValue == 1){
-		if (player[pNum].total >= 11) // For Aces!
-			player[pNum].hand[(player[pNum].numCards)].counter = 1;
-		else
-			player[pNum].hand[(player[pNum].numCards)].counter = 11;
-	}
-	else{
-		player[pNum].hand[(player[pNum].numCards)].counter = tempValue;
-	}
-
-	player[pNum].total += player[pNum].hand[(player[pNum].numCards)].counter;
-	player[pNum].numCards++;
+	player -> total += player -> hand[(player -> numCards)].counter;
+	player -> numCards++;
 	//need to remove card from deck, place in player's hand
+    }
+    else{
+        printf ("Miss");
+    }
 }
 
-void deckReset(Cards &deck, Profile* player, int numPlayers){
+void deckReset(Cards *deck, Profile* player, int numPlayers){
 	for (int i = 0; i <= 12; i++){
-		deck.Spades[i]= 0;
-		deck.Hearts[i]= 0;
-		deck.Diamonds[i]= 0;
-		deck.Clubs[i] = 0;
+		deck[0].Spades[i] = 0;
+		deck[0].Hearts[i] = 0;
+		deck[0].Diamonds[i] = 0;
+		deck[0].Clubs[i] = 0;
 	}
 
 	for (int i = 0; i <= numPlayers; i++){
@@ -190,14 +207,15 @@ void printCard(int suit, int value){
 	}
 }
 
-void deal(Cards &deck, Profile* player, int numPlayers){
+void deal(Cards *deck, Profile* player, int numPlayers){
 	for (int i = 0; i < numPlayers; i++)
 		for (int j = 0; j < 2; j++){
-            hit(deck, player, i);
+            hit(deck, &player[j]);
 		}
 }
 
 void display(Profile* player, int numPlayers){
+    system("cls");
 	printf("Dealer\t\t");
 	for (int i = 1; i < numPlayers; i++){
 		printf("player%i\t\t", i);
@@ -248,9 +266,23 @@ void saveGame(Profile* player, int numPlayers){
 
 }
 
+void round (Cards* deck, Profile* player, int numPlayers){
+    int userIn;
+    for (int i = 0; i < numPlayers; i++){
+        do{
+            printf ("Would you like to\n1 - stand\n2 - hit?\n");
+            userIn = getNum(1,2);
+            switch (userIn){
+                case 2:
+                    hit (deck, &player[i]);
+            }
+            display(player, numPlayers);
+        }while (userIn != 1);
+    }
+}
+
 //__________________________________________________________________Menu and Directories
-int startMenu(){ // the menu.
-	//Made this clear both before AND after, and have a pretty (subjective) title
+int startMenu(){
 	int user = 100;
 	system("cls");
 	printf("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
@@ -263,13 +295,12 @@ int startMenu(){ // the menu.
 	return user;
 }
 
-int mainGame(Cards *deck, Profile* player, int numPlayers){
-	deckReset(*deck, player, numPlayers);
-	deal(*deck, player, numPlayers);
+void mainGame(Cards *deck, Profile* player, int numPlayers){
+	deckReset(deck, player, numPlayers);
+	deal(deck, player, numPlayers);
 	display(player, numPlayers);
 	saveGame(player, numPlayers);
-	system("PAUSE");
-	return 0;
+	round (deck, player, numPlayers);
 }
 
 int main(){

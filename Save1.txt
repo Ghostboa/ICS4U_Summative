@@ -1,8 +1,8 @@
 Player 1: 
-1/0 8/2 
-Count: 19
+7/1 4/0 
+Count: 11
 
 Player 2: 
-3/1 2/1 
-Count: 5
+13/0 11/0 
+Count: 20
 
