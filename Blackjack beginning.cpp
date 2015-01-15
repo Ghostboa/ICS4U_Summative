@@ -1,7 +1,8 @@
 // Blackjack beginning.cpp : Defines the entry point for the console application.
 
-//Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
-// Other cool stuff: Variable AI aggressiveness/Number of Players, number of Cards, game records or login thing, actual betting, encrypted files, difficulty settings.
+//Requirements: Read output from File, complete actual game with Dealer AI
+//Other cool stuff: Variable AI aggressiveness/Number of Players, number of Cards, game records or login thing, actual betting, encrypted files, difficulty settings.
+//autostand
 
 /*
 The players' objective is to win money by creating card totals that turn out to be higher than the dealer's hand
@@ -163,20 +164,18 @@ void hit(Cards *deck, Profile* player){
 		break;
 	}
 
-    switch (tempValue){
-        case 1:
+        if (tempValue ==1){
             if ((player -> total) <= 10)
                 player -> hand[player -> numCards].counter = 11;
             else
                 player -> hand[player -> numCards].counter = 1;
-            break;
-//        case 11,12,13:
-//            player -> hand[player -> numCards.counter = 10;
-//            break;
-        default:
+        }
+        else if (tempValue > 10){
+            player -> hand[player -> numCards].counter = 10;
+        }
+        else{
             player -> hand[player -> numCards].counter = tempValue;
-            break;
-    }
+        }
 	player -> total += player -> hand[(player -> numCards)].counter;
 
 	player -> hand[player -> numCards].suit = tempSuit;
@@ -255,7 +254,6 @@ void display(Profile* player, int numPlayers){
 
 void saveGame(Profile* player, int numPlayers){
 	FILE *fp;
-
 	printf("Which slot would you like to save in? (1-3) \n");
 	int slot = getNum(1, 3);
 
@@ -286,19 +284,19 @@ void saveGame(Profile* player, int numPlayers){
 
 void round (Cards* deck, Profile* player, int numPlayers){
     int userIn;
-    for (int i = 0; i < numPlayers;){
-            display(player, numPlayers);
-            printf ("Player %i, would you like to\n1 - stand\n2 - hit?\n", i);
-            userIn = getNum(1,2);
-            switch (userIn){
-                case 1:
-                    i++;
-                    break;
-                case 2:
-                    hit (deck, &player[i]);
-                    break;
-            }
-    }
+    for (int i = 1; i < numPlayers;){
+        display(player, numPlayers);
+        printf ("Player %i, would you like to\n1 - stand\n2 - hit?\n3 - Save\n", i);
+        userIn = getNum(1,3);
+            if (userIn ==1 || player[i].total >= 21)
+                i++;
+            else if (userIn == 2)
+                hit (deck, &player[i]);
+            else if (userIn == 3)
+                saveGame(player, numPlayers);
+                }
+    printf ("End of Round");
+    system ("PAUSE\n");
 }
 */
 //__________________________________________________________________Menu and Directories
@@ -319,7 +317,6 @@ void mainGame(Cards *deck, Profile* player, int numPlayers){
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
     round (deck, player, numPlayers);
-	saveGame(player, numPlayers);
 }
 
 int main(){
