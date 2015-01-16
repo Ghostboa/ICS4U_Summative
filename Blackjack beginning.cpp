@@ -345,7 +345,11 @@ void loadGame(Cards *deck, Profile *player){
 		return; // This should not happen.
 
 	if (fp){
+
+
 		fscanf(fp, "%i ", &numPlayers);
+
+		            deckReset (deck,player,numPlayers);
 
 		if (feof(fp)){
 
