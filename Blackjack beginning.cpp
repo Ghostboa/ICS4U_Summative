@@ -194,7 +194,7 @@ void deckReset(Cards *deck, Profile* player, int numPlayers){
 	for (int i = 0; i <= numPlayers; i++){
 		player[i].numCards = 0;
 		player[i].total = 0;
-		player[i].fucklenuts = rb (MIN_RISK,MAX_RISK); 
+		player[i].fucklenuts = rb(MIN_RISK, MAX_RISK);
 		player[i].end = false;
 	}
 }
@@ -226,7 +226,7 @@ void deal(Cards *deck, Profile* player, int numPlayers){
 		hit(deck, &player[i]);
 		}
 		else for (int j = 0; j < 2; j++){
-		hit(deck, &player[i]);
+			hit(deck, &player[i]);
 		}
 }
 
@@ -261,11 +261,11 @@ void display(Profile* player, int numPlayers){ // Displays the players hand on t
 		if (i == 0)
 			printf("Dealer: ");
 		else
-		printf("Player %i: ", i);
+			printf("Player %i: ", i);
 
 		for (int k = 0; k < player[i].numCards; k++){
 			printCard(player[i].hand[k].suit, player[i].hand[k].value);
-			
+
 		}
 		printf("\n");
 		printf("Count: %i.\n", player[i].total);
@@ -299,6 +299,8 @@ void saveGame(Profile* player, int numPlayers){
 			fprintf(fp, "\n");
 			fprintf(fp, "%i", player[i].total); //Count
 			fprintf(fp, "\n");
+			fprintf(fp, "%i", player[i].end);
+			fprintf(fp, "\n");
 		}
 
 		fclose(fp);
@@ -325,18 +327,30 @@ void round(Cards* deck, Profile* player, int numPlayers){
 				dealer(deck, player);
 
 			else if (i == 1){
-				printf("Player %i, would you like to\n1 - stand\n2 - hit?\n3 - Save\n", i);
-				userIn = getNum(1, 3);
-				if (userIn == 1 || player[i].total >= 21)
-					player[i].end = true;
-				else if (userIn == 2)
-					hit(deck, &player[i]);
-				else if (userIn == 3)
-					saveGame(player, numPlayers);
+
+				if (player[i].end == false){
+					userIn = 0;
+
+					do{
+						printf("Player %i, would you like to\n1 - stand\n2 - hit?\n3 - Save\n", i);
+						userIn = getNum(1, 3);
+						if (userIn == 1 || player[i].total >= 21)
+							player[i].end = true;
+						else if (userIn == 2)
+							hit(deck, &player[i]);
+						else if (userIn == 3){
+							saveGame(player, numPlayers);
+							display(player, numPlayers);
+						}
+					} while (userIn == 3 );
+				}
 			}
 			else if (i > 1){
-				AI(deck,& player[i]);
+				AI(deck, &player[i]);
 			}
+
+			if (player[i].total > 21)
+				player[i].end = true;
 		}
 
 	}
@@ -363,7 +377,6 @@ void mainGame(Cards *deck, Profile* player, int numPlayers){
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
 	round(deck, player, numPlayers);
-	saveGame(player, numPlayers);
 }
 
 void loadGame(Cards *deck, Profile *player){
@@ -414,6 +427,7 @@ void loadGame(Cards *deck, Profile *player){
 
 			}
 			fscanf(fp, "%i ", &player[i].total); //Count
+			fscanf(fp, "%i ", &player[i].end); // Checks if player's ended or not.
 		}
 		fclose(fp);
 		round(deck, player, numPlayers);
@@ -425,7 +439,8 @@ void loadGame(Cards *deck, Profile *player){
 
 int main(){
 	//setup required structs and seeding pre-game
-	int numPlayers = getNum(2,4);
+	printf("Enter Number of players (2-4) \n");
+	int numPlayers = getNum (2,4);
 	Profile player[10]; // The compiler won't stop yelling at me for using an unknown variable :(
 	Cards deck;
 	srand(time(NULL)); // Seeding the thing
