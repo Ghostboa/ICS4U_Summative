@@ -136,6 +136,23 @@ hit(*deck, *dealer);
 }
 */
 
+void setPlayed(Cards* deck, int tempValue, int tempSuit){ 		//removal from deck (suits are annoying)
+	switch (tempSuit){											// Makes sure there are no duplicate cards dealt.
+	case 0:
+		deck[0].Spades[tempValue] = 1;
+		break;
+	case 1:
+		deck[0].Hearts[tempValue] = 1;
+		break;
+	case 2:
+		deck[0].Diamonds[tempValue] = 1;
+		break;
+	case 3:
+		deck[0].Clubs[tempValue] = 1;
+		break;
+	}
+}
+
 
 void hit(Cards *deck, Profile* player){
 	if (player->total < 21){
@@ -148,20 +165,8 @@ void hit(Cards *deck, Profile* player){
 		} while (cardCheck(deck, tempSuit, tempValue) == true);
 
 		//removal from deck (suits are annoying)
-		switch (tempSuit){
-		case 0:
-			deck[0].Spades[tempValue] = 1;
-			break;
-		case 1:
-			deck[0].Hearts[tempValue] = 1;
-			break;
-		case 2:
-			deck[0].Diamonds[tempValue] = 1;
-			break;
-		case 3:
-			deck[0].Clubs[tempValue] = 1;
-			break;
-		}
+		setPlayed(deck, tempValue, tempSuit);
+
 
 		if (tempValue == 1){
 			if (player->total <= 10){
@@ -349,7 +354,7 @@ void loadGame(Cards *deck, Profile *player){
 
 		fscanf(fp, "%i ", &numPlayers);
 
-		            deckReset (deck,player,numPlayers);
+		deckReset(deck, player, numPlayers);
 
 		if (feof(fp)){
 
@@ -367,7 +372,8 @@ void loadGame(Cards *deck, Profile *player){
 			system("PAUSE");
 
 			for (int k = 0; k < player[i].numCards; k++){
-				fscanf(fp, "%i %i %i ", &player[i].hand[k].value, &player[i].hand[k].suit, &player[i].hand[k].counter);
+				fscanf(fp, "%i %i %i ", &player[i].hand[k].value, &player[i].hand[k].suit, &player[i].hand[k].counter); //Value,suit,counter.
+				setPlayed(deck, player[i].hand[k].value, player[i].hand[k].suit); // Makes sure that no duplicates can be dealt
 
 			}
 			fscanf(fp, "%i ", &player[i].total); //Count
