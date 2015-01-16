@@ -1,6 +1,6 @@
 // Blackjack beginning.cpp : Defines the entry point for the console application.
 
-//Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
+//Requirements: Save output to File, complete actual game with Dealer AI/remove individual card worths
 // Other cool stuff: Variable AI aggressiveness/Number of Players, number of Cards, game records or login thing, actual betting, encrypted files, difficulty settings.
 
 /*
@@ -111,8 +111,34 @@ int getNumPlayers(){
 }
 
 void addCard(Profile* player, int tempSuit, int tempValue){
-	player->hand[player->numCards].suit = tempSuit;
-	player->hand[player->numCards].value = tempValue;
+	player -> hand[player -> numCards].suit = tempSuit;
+	player -> hand[player -> numCards].value = tempValue;
+}
+
+int sum (Profile* player){
+    int numAces = 0;
+    player -> total = 0;
+    for (int i = 0; i < player -> numCards; i++){
+        if (player -> hand[i] . value == 1){
+                numAces ++;
+		}
+		else if (player -> hand[i] . value >= 10){
+			player -> total += 10;
+		}
+		else{
+			player -> total += player -> hand[i] . value;
+		}
+    }
+
+    for (int i = 0; i < numAces; i++){
+        if (player -> total <= 10){
+            player -> total += 11;
+        }
+        else{
+            player -> total += 1;
+        }
+    }
+    return player -> total;
 }
 //__________________________________________________________________Complex Functions
 /*
@@ -163,26 +189,10 @@ void hit(Cards *deck, Profile* player){
 			break;
 		}
 
-		if (tempValue == 1){
-			if (player->total <= 10){
-				player->hand[player->numCards].counter = 11;
-			}
-			else{
-				player->hand[player->numCards].counter = 1;
-			}
-		}
-		else if (tempValue > 10){
-			player->hand[player->numCards].counter = 10;
-		}
-		else{
-			player->hand[player->numCards].counter = tempValue;
-		}
-
-		player->total += player->hand[(player->numCards)].counter;
+		//adds to player's hand
 		player->hand[player->numCards].suit = tempSuit;
 		player->hand[player->numCards].value = tempValue;
 		player->numCards++;
-
 	}
 	else{
 		printf("Miss");
@@ -245,7 +255,7 @@ void display(Profile* player, int numPlayers){
 	}
 	printf("\n");
 	for (int i = 0; i < numPlayers; i++){
-		printf("Total: %i\t", player[i].total);
+		printf("Total: %i\t", sum(&player[i]));
 	}
 	printf("\n");
 
