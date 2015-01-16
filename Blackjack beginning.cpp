@@ -88,10 +88,10 @@ bool cardCheck(Cards *deck, int suit, int value){ //returns whether a certain ca
 }
 
 void rules(){
-    printf("RULES:\n");
+	printf("RULES:\n");
 	printf("Blackjack is the most DANK game on PC! I've learned how to collect SWAG DOLLAS \nfrom Bigley by harnessing the Illuminatis card counters and 360 noscoping the \ndealer! MY review of Blackjack is 8/8, no b8 m8. Hehv fun! Huehuehuehuehuehue.\n");
 	system("PAUSE");
-    /*
+	/*
 	printf("RULES:\n");
 	printf("The goal of Blackjack is to have the highest hand without exceeding a total value of 21.\n");
 	printf("Every player is dealt two cards.\n");
@@ -105,88 +105,88 @@ void rules(){
 	*/
 }
 
-int getNumPlayers (){
+int getNumPlayers(){
 	printf("Input number of players, including dealer\n");
 	return getNum(2, MAX_PLAYERS);
 }
 
-void addCard (Profile* player, int tempSuit, int tempValue){
-	player -> hand[player -> numCards].suit = tempSuit;
-	player -> hand[player -> numCards].value = tempValue;
+void addCard(Profile* player, int tempSuit, int tempValue){
+	player->hand[player->numCards].suit = tempSuit;
+	player->hand[player->numCards].value = tempValue;
 }
 //__________________________________________________________________Complex Functions
 /*
 void AI (Cards *deck, Profile*AI){
-    int stand = 0;
+int stand = 0;
 
-    if (*AI.money < 1)
-        //surrender
-    while (!stand){
-        if(*AI.total + *AI.fucklenuts > 21)
-            stand = 1;
-        else
-            hit(*deck, *AI);
+if (*AI.money < 1)
+//surrender
+while (!stand){
+if(*AI.total + *AI.fucklenuts > 21)
+stand = 1;
+else
+hit(*deck, *AI);
 }
 }
 
 
 void dealer (Profile*dealer){
-    while (dealer.total < 18)
-       hit(*deck, *dealer);
+while (dealer.total < 18)
+hit(*deck, *dealer);
 }
 */
 
 
 void hit(Cards *deck, Profile* player){
-    if (player -> total < 21){
-	int tempSuit;
-	int tempValue;
+	if (player->total < 21){
+		int tempSuit;
+		int tempValue;
 
-	do {
-		tempSuit = rand() % 3;
-		tempValue = rb(1, 13);
-	} while (cardCheck(deck, tempSuit, tempValue) == true);
+		do {
+			tempSuit = rand() % 3;
+			tempValue = rb(1, 13);
+		} while (cardCheck(deck, tempSuit, tempValue) == true);
 
-	//removal from deck (suits are annoying)
-	switch (tempSuit){
-	case 0:
-		deck[0].Spades[tempValue] = 1;
-		break;
-	case 1:
-		deck[0].Hearts[tempValue] = 1;
-		break;
-	case 2:
-		deck[0].Diamonds[tempValue] = 1;
-		break;
-	case 3:
-		deck[0].Clubs[tempValue] = 1;
-		break;
+		//removal from deck (suits are annoying)
+		switch (tempSuit){
+		case 0:
+			deck[0].Spades[tempValue] = 1;
+			break;
+		case 1:
+			deck[0].Hearts[tempValue] = 1;
+			break;
+		case 2:
+			deck[0].Diamonds[tempValue] = 1;
+			break;
+		case 3:
+			deck[0].Clubs[tempValue] = 1;
+			break;
+		}
+
+		if (tempValue == 1){
+			if (player->total <= 10){
+				player->hand[player->numCards].counter = 11;
+			}
+			else{
+				player->hand[player->numCards].counter = 1;
+			}
+		}
+		else if (tempValue > 10){
+			player->hand[player->numCards].counter = 10;
+		}
+		else{
+			player->hand[player->numCards].counter = tempValue;
+		}
+
+		player->total += player->hand[(player->numCards)].counter;
+		player->hand[player->numCards].suit = tempSuit;
+		player->hand[player->numCards].value = tempValue;
+		player->numCards++;
+
 	}
-
-    if (tempValue == 1){
-        if (player -> total <= 10){
-            player -> hand[player -> numCards].counter = 11;
-        }
-        else{
-            player -> hand[player -> numCards].counter = 1;
-        }
-    }
-    else if (tempValue > 10){
-            player -> hand[player -> numCards].counter = 10;
-    }
-    else{
-        player -> hand[player -> numCards].counter = tempValue;
-    }
-
-	player -> total += player -> hand[(player -> numCards)].counter;
-	player -> hand[player -> numCards].suit = tempSuit;
-	player -> hand[player -> numCards].value = tempValue;
-	player -> numCards++;
-
-    }
-    else{
-        printf ("Miss");
-    }
+	else{
+		printf("Miss");
+	}
 }
 
 void deckReset(Cards *deck, Profile* player, int numPlayers){
@@ -226,13 +226,13 @@ void printCard(const int suit, const int value){
 void deal(Cards *deck, Profile* player, int numPlayers){
 	for (int i = 0; i < numPlayers; i++)
 		for (int j = 0; j < 2; j++){
-            hit(deck, &player[j]);
+		hit(deck, &player[j]);
 		}
 }
 
 void display(Profile* player, int numPlayers){
 
-    system("cls");
+	system("cls");
 	printf("Dealer\t\t");
 	for (int i = 1; i < numPlayers; i++){
 		printf("player%i\t\t", i);
@@ -268,14 +268,15 @@ void saveGame(Profile* player, int numPlayers){
 		fp = fopen("Save1.txt", "w");
 
 	if (fp){
+		fprintf(fp, "%i\n", numPlayers); // Number of players is at top of file.
 		for (int i = 0; i < numPlayers; i++){
-			fprintf(fp, "Player %i: \n", i + 1);
+			fprintf(fp, "%i\n", player[i].numCards); // numCards
 			for (int k = 0; k < player[i].numCards; k++){
-				fprintf(fp, "%i/%i ", player[i].hand[k].value, player[i].hand[k].suit);
-			}
+				fprintf(fp, "%i %i %i ", player[i].hand[k].value, player[i].hand[k].suit, player[i].hand[k].counter);
+			} // value/suit/counter
 			fprintf(fp, "\n");
-			fprintf(fp, "Count: %i", player[i].total);
-			fprintf(fp, "\n\n");
+			fprintf(fp, "%i", player[i].total); //Count
+			fprintf(fp, "\n");
 		}
 
 		fclose(fp);
@@ -283,23 +284,23 @@ void saveGame(Profile* player, int numPlayers){
 
 }
 
-void round (Cards* deck, Profile* player, int numPlayers){
-    int userIn;
+void round(Cards* deck, Profile* player, int numPlayers){
+	int userIn;
 
-    for (int i = 1; i < numPlayers;){
-        display(player, numPlayers);
-        printf ("Player %i, would you like to\n1 - stand\n2 - hit?\n3 - Save\n", i);
-        userIn = getNum(1,3);
-            if (userIn ==1 || player[i].total >= 21)
-                i++;
-            else if (userIn == 2)
-                hit (deck, &player[i]);
-            else if (userIn == 3)
-                saveGame(player, numPlayers);
-                }
-    printf ("End of Round");
-    system ("PAUSE\n");
-    }
+	for (int i = 1; i < numPlayers;){
+		display(player, numPlayers);
+		printf("Player %i, would you like to\n1 - stand\n2 - hit?\n3 - Save\n", i);
+		userIn = getNum(1, 3);
+		if (userIn == 1 || player[i].total >= 21)
+			i++;
+		else if (userIn == 2)
+			hit(deck, &player[i]);
+		else if (userIn == 3)
+			saveGame(player, numPlayers);
+	}
+	printf("End of Round");
+	system("PAUSE\n");
+}
 
 //__________________________________________________________________Menu and Directories
 int startMenu(){
@@ -309,8 +310,9 @@ int startMenu(){
 	printf("0. Rules \n");
 	printf("1. Start game. \n");
 	printf("2. Exit\n");
+	printf("3. Test Load game \n");
 
-	user = getNum(0, 2);
+	user = getNum(0, 3);
 	system("cls");
 	return user;
 }
@@ -318,16 +320,68 @@ int startMenu(){
 void mainGame(Cards *deck, Profile* player, int numPlayers){
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
-    round (deck, player, numPlayers);
+	round(deck, player, numPlayers);
 	saveGame(player, numPlayers);
 }
 
+void loadGame(Cards *deck, Profile *player){
+	FILE *fp;
+	int numPlayers = 0;
+
+	printf("Which slot would you like to load from? (1-3) \n");
+	printf("0. Exit");
+
+	int slot = getNum(0, 3);
+
+	if (slot == 0)
+		return;
+	else if (slot == 1) // Perhaps this should be changed to allow for file name variation (Constants.)
+		fp = fopen("Save1.txt", "r");
+	else if (slot == 2)
+		fp = fopen("Save2.txt", "r");
+	else if (slot == 3)
+		fp = fopen("Save3.txt", "r");
+	else
+		return; // This should not happen.
+
+	if (fp){
+		fscanf(fp, "%i ", &numPlayers);
+
+		if (feof(fp)){
+
+			printf("End of File???");
+			system("Pause");
+			return;
+		}
+
+		printf("%i players", numPlayers);
+		system("PAUSE");
+
+		for (int i = 0; i < numPlayers; i++){
+			fscanf(fp, "%i ", &player[i].numCards);
+			printf("Player %i has %i cards. ", i, player[i].numCards);
+			system("PAUSE");
+
+			for (int k = 0; k < player[i].numCards; k++){
+				fscanf(fp, "%i %i %i ", &player[i].hand[k].value, &player[i].hand[k].suit, &player[i].hand[k].counter);
+
+			}
+			fscanf(fp, "%i ", &player[i].total); //Count
+		}
+		fclose(fp);
+		round(deck, player, numPlayers);
+	}
+
+
+
+}
+
 int main(){
-    //setup required structs and seeding pre-game
+	//setup required structs and seeding pre-game
 	int numPlayers = getNumPlayers();
-    Profile player[numPlayers];
-    Cards deck;
-    srand(time(NULL)); // Seeding the thing
+	Profile player[numPlayers]; // The compiler won't stop yelling at me for using an unknown variable :(
+	Cards deck;
+	srand(time(NULL)); // Seeding the thing
 
 
 	while (1){
@@ -342,6 +396,7 @@ int main(){
 
 		case (2) :
 			return 0;
+		case(3) : loadGame(&deck, player);
 		}
 	}
 	system("PAUSE");
