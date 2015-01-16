@@ -335,7 +335,6 @@ void mainGame(Cards *deck, Profile* player, int numPlayers){
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
 	round(deck, player, numPlayers);
-	saveGame(player, numPlayers);
 }
 
 void loadGame(Cards *deck, Profile *player){
