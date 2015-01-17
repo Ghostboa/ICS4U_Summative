@@ -119,7 +119,31 @@ void addCard(Profile* player, int tempSuit, int tempValue){
 }
 //__________________________________________________________________Complex Functions
 
+int sum(Profile* player){
+	int numAces = 0;
+	player->total = 0;
+	for (int i = 0; i < player->numCards; i++){
+		if (player->hand[i].value == 1){
+			numAces++;
+		}
+		else if (player->hand[i].value >= 10){
+			player->total += 10;
+		}
+		else{
+			player->total += player->hand[i].value;
+		}
+	}
 
+	for (int i = 0; i < numAces; i++){
+		if (player->total <= 10){
+			player->total += 11;
+		}
+		else{
+			player->total += 1;
+		}
+	}
+	return player->total;
+}
 
 
 
@@ -157,22 +181,7 @@ void hit(Cards *deck, Profile* player){
 		setPlayed(deck, tempValue, tempSuit);
 
 
-		if (tempValue == 1){
-			if (player->total <= 10){
-				player->hand[player->numCards].counter = 11;
-			}
-			else{
-				player->hand[player->numCards].counter = 1;
-			}
-		}
-		else if (tempValue > 10){
-			player->hand[player->numCards].counter = 10;
-		}
-		else{
-			player->hand[player->numCards].counter = tempValue;
-		}
-
-		player->total += player->hand[(player->numCards)].counter;
+		// Hadds stuff to hand
 		player->hand[player->numCards].suit = tempSuit;
 		player->hand[player->numCards].value = tempValue;
 		player->numCards++;
@@ -268,7 +277,7 @@ void display(Profile* player, int numPlayers){ // Displays the players hand on t
 
 		}
 		printf("\n");
-		printf("Count: %i.\n", player[i].total);
+		printf("Count: %i.\n", sum (&player[i]));
 	}
 	printf("\n");
 
@@ -328,13 +337,13 @@ void round(Cards* deck, Profile* player, int numPlayers){
 
 			else if (i == 1){
 
-				if (player[i].end == false){
+				if (player[i].end == false && sum(&player[i])<21){
 					userIn = 0;
 
 					do{
 						printf("Player %i, would you like to\n1 - stand\n2 - hit?\n3 - Save\n", i);
 						userIn = getNum(1, 3);
-						if (userIn == 1 || player[i].total >= 21)
+						if (userIn == 1 || sum (&player[i]) >= 21)
 							player[i].end = true;
 						else if (userIn == 2)
 							hit(deck, &player[i]);
