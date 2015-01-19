@@ -84,10 +84,10 @@ bool cardCheck(Cards *deck, int suit, int value){ //returns whether a certain ca
 }
 
 void rules(){ // Prints the rules...
-	//printf("RULES:\n");
-	//printf("Blackjack is the most DANK game on PC! I've learned how to collect SWAG DOLLAS \nfrom Bigley by harnessing the Illuminatis card counters and 360 noscoping the \ndealer! MY review of Blackjack is 8/8, no b8 m8. Hehv fun! Huehuehuehuehuehue.\n");
-	//system("PAUSE");
-	
+	printf("RULES:\n");
+	printf("Blackjack is the most DANK game on PC! I've learned how to collect SWAG DOLLAS \nfrom Bigley by harnessing the Illuminatis card counters and 360 noscoping the \ndealer! MY review of Blackjack is 8/8, no b8 m8. Hehv fun! Huehuehuehuehuehue.\n");
+	system("PAUSE");
+    system("cls");
 	printf("RULES:\n");
 	printf("The goal of Blackjack is to have the highest hand without exceeding a total value of 21.\n");
 	printf("Every player is dealt two cards.\n");
@@ -98,7 +98,7 @@ void rules(){ // Prints the rules...
 	printf("The dealer goes first, and hits himself until he has a hand of 18 or over.\n");
 	printf("Everybody else can choose to hit or stand as they wish.\n");
 	system("PAUSE");
-	
+
 }
 
 int getNumPlayers(){ // IDK if this is needed...
@@ -367,8 +367,8 @@ int startMenu(){
 	printf("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
 	printf("0. Rules \n");
 	printf("1. Start game. \n");
-	printf("2. Exit\n");
-	printf("3. Test Load game \n");
+	printf("2. Load game \n");
+	printf("3. Exit\n");
 
 	user = getNum(0, 3);
 	system("cls");
@@ -377,8 +377,8 @@ int startMenu(){
 
 void mainGame(Cards *deck, Profile* player){
 	int numPlayers = 0;
-	printf("Enter Number of players (2-4) \n");
-	 numPlayers = getNum(2, 4);
+	printf("Enter Number of players (2-6) \n");
+	 numPlayers = getNum(2, 6);
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
 	round(deck, player, numPlayers);
@@ -441,7 +441,7 @@ void loadGame(Cards *deck, Profile *player){
 int main(){
 	//setup required structs and seeding pre-game
 
-	Profile player[10]; 
+	Profile player[10];
 	Cards deck;
 	srand(time(NULL)); // Seeding the thing
 
@@ -455,10 +455,14 @@ int main(){
 		case (1) :
 			mainGame(&deck, player);
 			break;
-
-		case (2) :
+		case(2) :
+		    loadGame(&deck, player);
+		    break;
+		case (3) :
 			return 0;
-		case(3) : loadGame(&deck, player);
+        default:
+            printf ("UrBadKid");
+            break;
 		}
 	}
 	system("PAUSE");
