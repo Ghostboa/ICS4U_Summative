@@ -27,7 +27,6 @@ const int MAX_RISK = 8;
 //__________________________________________________________________Structures and Constants
 const int maxCards = 52; //#define maxCards 52
 
-enum suits { Spades, Hearts, Diamonds, Clubs }; // Wait we don't actually use this...
 
 struct Cards{
 	bool Spades[13]; // Array of booleans meant to signal if the card has already been played
@@ -87,7 +86,7 @@ void rules(){ // Prints the rules...
 	//printf("RULES:\n");
 	//printf("Blackjack is the most DANK game on PC! I've learned how to collect SWAG DOLLAS \nfrom Bigley by harnessing the Illuminatis card counters and 360 noscoping the \ndealer! MY review of Blackjack is 8/8, no b8 m8. Hehv fun! Huehuehuehuehuehue.\n");
 	//system("PAUSE");
-	
+
 	printf("RULES:\n");
 	printf("The goal of Blackjack is to have the highest hand without exceeding a total value of 21.\n");
 	printf("Every player is dealt two cards.\n");
@@ -98,7 +97,7 @@ void rules(){ // Prints the rules...
 	printf("The dealer goes first, and hits himself until he has a hand of 18 or over.\n");
 	printf("Everybody else can choose to hit or stand as they wish.\n");
 	system("PAUSE");
-	
+
 }
 
 int getNumPlayers(){ // IDK if this is needed...
@@ -106,10 +105,6 @@ int getNumPlayers(){ // IDK if this is needed...
 	return getNum(2, MAX_PLAYERS);
 }
 
-void addCard(Profile* player, int tempSuit, int tempValue){ // This isn't called anywhere....
-	player->hand[player->numCards].suit = tempSuit;
-	player->hand[player->numCards].value = tempValue;
-}
 //__________________________________________________________________Complex Functions
 
 int sum(Profile* player){ // Determines player total.
@@ -142,7 +137,7 @@ int sum(Profile* player){ // Determines player total.
 
 
 
-void setPlayed(Cards* deck, int tempValue, int tempSuit){ 		//removal from deck (suits are annoying)
+void setPlayed(Cards* deck, int tempValue, int tempSuit){ 		//removal from deck (Suits are annoying)
 	switch (tempSuit){											// Makes sure there are no duplicate cards dealt.
 	case 0:
 		deck[0].Spades[tempValue] = 1;
@@ -170,11 +165,11 @@ void hit(Cards *deck, Profile* player){ // Deals a player a random card.
 			tempValue = rb(1, 13);
 		} while (cardCheck(deck, tempSuit, tempValue) == true);
 
-		//removal from deck (suits are annoying)
+		//removal from deck (Suits are annoying)
 		setPlayed(deck, tempValue, tempSuit);
 
 
-		// Hadds stuff to hand
+		// Adds stuff to hand
 		player->hand[player->numCards].suit = tempSuit;
 		player->hand[player->numCards].value = tempValue;
 		player->numCards++;
@@ -360,6 +355,21 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 	system("PAUSE\n");
 }
 
+//note to self: swap both players' pointers!!!
+void roundEnd (Profile* player, int numPlayers){
+    int temp;
+    int hi;
+    //bubblesort because very small array
+    for (int i = 0; i < numPlayers; i++){
+        for (int j = i; j < numPlayers ; j++){
+            if (sum(player[i]) < sum(player[j])){
+                hi = &player[j]
+            }
+        }
+        player[i] ->  =
+    }
+}
+
 //__________________________________________________________________Menu and Directories
 int startMenu(){
 	int user = 100;
@@ -382,6 +392,7 @@ void mainGame(Cards *deck, Profile* player){
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
 	round(deck, player, numPlayers);
+	roundEnd (player,numPlayers);
 }
 
 void loadGame(Cards *deck, Profile *player){
@@ -441,7 +452,7 @@ void loadGame(Cards *deck, Profile *player){
 int main(){
 	//setup required structs and seeding pre-game
 
-	Profile player[10]; 
+	Profile player[10];
 	Cards deck;
 	srand(time(NULL)); // Seeding the thing
 
