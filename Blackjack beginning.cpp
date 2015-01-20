@@ -351,22 +351,28 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 		}
 
 	}
-	printf("End of Game.");
+	printf("End of Game.\n");
 	system("PAUSE\n");
 }
 
 //note to self: swap both players' pointers!!!
 void roundEnd (Profile* player, int numPlayers){
-    int temp;
-    int hi;
+    Profile temp;
     //bubblesort because very small array
     for (int i = 0; i < numPlayers; i++){
         for (int j = i; j < numPlayers ; j++){
-            if (sum(player[i]) < sum(player[j])){
-                hi = &player[j]
+            if (sum(&player[i]) < sum(&player[j])){
+                printf ("Before P%i:%i P%i:%i\n",i,sum (&player[i]),j,sum(&player[j]));
+                temp = player[j];
+                player[j] = player[i];
+                player[i] = temp;
+                printf ("After P%i:%i P%i:%i\n\n",i,sum (&player[i]),j,sum(&player[j]));
             }
         }
-        player[i] ->  =
+//        player[i] ->  =
+    }
+    for (int i = 0; i < numPlayers; i++){
+        printf ("%i\n", sum (&player[i]));
     }
 }
 
@@ -387,12 +393,13 @@ int startMenu(){
 
 void mainGame(Cards *deck, Profile* player){
 	int numPlayers = 0;
-	printf("Enter Number of players (2-4) \n");
-	 numPlayers = getNum(2, 4);
+	printf("Enter Number of players (2-6) \n");
+	 numPlayers = getNum(2, 6);
 	deckReset(deck, player, numPlayers);
 	deal(deck, player, numPlayers);
 	round(deck, player, numPlayers);
 	roundEnd (player,numPlayers);
+	system ("PAUSE");
 }
 
 void loadGame(Cards *deck, Profile *player){
