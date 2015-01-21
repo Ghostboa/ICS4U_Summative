@@ -19,6 +19,7 @@ On their turn, players must choose whether to
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <string.h>
 #include "time.h"
 #define MAX_PLAYERS 2
 const int MIN_RISK = 2; // This is sort of misleading: The smaller the number the higher the risk level is... :/
@@ -377,6 +378,34 @@ void roundEnd (Profile* player, int numPlayers){
     }
 }
 
+void nameGen (Profile * players, int numPlayers){
+    int whichName;
+    int takenNames [8];
+    for (int i = 2; i < numPlayers; i++){
+        whichName = rb (1, 8);
+        switch (whichName){
+		case (1) :
+            strcpy(players[i].name, "DANK!");
+		case (2) :
+            strcpy(players[i].name, "Jon Devlin");
+		case (3) :
+            strcpy(players[i].name, "Brooker Brooks");
+		case (4) :
+            strcpy(players[i].name, "Ross Reid");
+		case (5) :
+            strcpy(players[i].name, "Cotton-Headed Ninny-Muggins");
+		case (6) :
+            strcpy(players[i].name, "Cameron 'Lebron' Mussar");
+		case (7) :
+            strcpy(players[i].name, "The Great Leader Rem-Jong-Un");
+		case (8) :
+            strcpy(players[i].name, "Neil DeGrasse Tyson");
+		}
+
+    }
+}
+
+
 //__________________________________________________________________Menu and Directories
 int startMenu(){
 	int user = 100;
@@ -397,6 +426,7 @@ void mainGame(Cards *deck, Profile* player){
 	printf("Enter Number of players (2-6) \n");
 	 numPlayers = getNum(2, 6);
 	deckReset(deck, player, numPlayers);
+	nameGen(player, numPlayers);
 	deal(deck, player, numPlayers);
 	round(deck, player, numPlayers);
 	roundEnd (player,numPlayers);
