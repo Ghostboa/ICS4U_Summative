@@ -398,11 +398,11 @@ void nameGen (Profile * players, int numPlayers){
 		case (4) :
             strcpy(players[i].name, "Ross Reid");
 		case (5) :
-            strcpy(players[i].name, "Cotton-Headed Ninny-Muggins");
+            strcpy(players[i].name, "Big Tyrone");
 		case (6) :
             strcpy(players[i].name, "Cameron 'Lebron' Mussar");
 		case (7) :
-            strcpy(players[i].name, "The Great Leader Rem-Jong-Un");
+            strcpy(players[i].name, "The Glorious Leader Rem-Jong-Un");
 		case (8) :
             strcpy(players[i].name, "Neil DeGrasse Tyson");
 		}
@@ -470,7 +470,7 @@ void loadGame(Cards *deck, Profile *player){
 			system("Pause");
 			return;
 		}
-
+strcpy
 
 		for (int i = 0; i < numPlayers; i++){
 			fscanf(fp, "%i ", &player[i].numCards);
