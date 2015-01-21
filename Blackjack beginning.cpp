@@ -48,7 +48,7 @@ struct Profile { // Player struct that holds the p
 	int total; // Total count, determines when the player hits 21 and busts.
 	int fucklenuts; // This defines the risk of the computer player, or the amount of points from 21 that they will stand on. (Lower number = higher points.)
 	bool end; // Determines whether the player has busted.
-	char name[80];
+	char name[6];
 };
 
 
@@ -257,16 +257,15 @@ void display(Profile* player, int numPlayers){ // Displays the players hands on 
 
 	for (int i = 0; i < numPlayers; i++){
 		if (i == 0)
-			printf("Dealer: ");
+			printf("Dealer\n");
 		else
-			printf("Player %i: ", i);
+			printf("%s\n", player[i].name);
 
 		for (int k = 0; k < player[i].numCards; k++){
 			printCard(player[i].hand[k].suit, player[i].hand[k].value);
 
 		}
-		printf("\n");
-		printf("Count: %i.\n", sum (&player[i]));
+		printf(": %i.\n\n", sum (&player[i]));
 	}
 	printf("\n");
 
@@ -363,13 +362,14 @@ void roundEnd (Profile* player, int numPlayers){
     for (int i = 0; i < numPlayers; i++){
         for (int j = i; j < numPlayers ; j++){
             if (sum(&player[i]) < sum(&player[j])){
-                printf ("Before P%i:%i P%i:%i\n",i,sum (&player[i]),j,sum(&player[j]));
+                printf ("Before %s:%i %s:%i\n",player[i].name,sum (&player[i]),player[j].name,sum(&player[j]));
                 temp = player[j];
                 player[j] = player[i];
                 player[i] = temp;
-                printf ("After P%i:%i P%i:%i\n\n",i,sum (&player[i]),j,sum(&player[j]));
+                printf ("After %s:%i %s:%i\n\n",player[i].name,sum (&player[i]),player[j].name,sum(&player[j]));
             }
         }
+                        system("PAUSE");
 //        player[i] ->  =
     }
     for (int i = 0; i < numPlayers; i++){
@@ -463,7 +463,6 @@ int main(){
 	Profile player[10];
 	Cards deck;
 	srand(time(NULL)); // Seeding the thing
-
 
 	while (1){
 		switch (startMenu()){
