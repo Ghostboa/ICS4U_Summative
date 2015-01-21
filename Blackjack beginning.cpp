@@ -110,9 +110,8 @@ int getNumPlayers(){ // IDK if this is needed...
 int playerInit (Profile* player){
     char temp[80];
     printf ("Please enter your name\n");
-     fflush( stdin );
-    scanf("%s",player[1].name);
-    printf ("%s",player[1].name);
+    fflush(stdin);
+    gets(player[1].name);
 	printf("Enter Number of players (2-6) \n");
 	return getNum(2, 6);
 }
@@ -267,9 +266,7 @@ void display(Profile* player, int numPlayers){ // Displays the players hands on 
 	system("cls");
 
 	for (int i = 0; i < numPlayers; i++){
-		if (i == 0)
-			printf("Dealer\n");
-		else
+
 			printf("%s\n", player[i].name);
 
 		for (int k = 0; k < player[i].numCards; k++){
@@ -373,19 +370,17 @@ void roundEnd (Profile* player, int numPlayers){
     for (int i = 0; i < numPlayers; i++){
         for (int j = i; j < numPlayers ; j++){
             if (sum(&player[i]) < sum(&player[j])){
-                printf ("Before %s:%i %s:%i\n",player[i].name,sum (&player[i]),player[j].name,sum(&player[j]));
                 temp = player[j];
                 player[j] = player[i];
                 player[i] = temp;
-                printf ("After %s:%i %s:%i\n\n",player[i].name,sum (&player[i]),player[j].name,sum(&player[j]));
             }
         }
-                        system("PAUSE");
 //        player[i] ->  =
     }
     for (int i = 0; i < numPlayers; i++){
-        printf ("%i\n", sum (&player[i]));
+        printf ("%s: %i\n",player[i].name, sum (&player[i]));
     }
+        system("PAUSE");
 }
 
 void nameGen (Profile * players, int numPlayers){
@@ -413,6 +408,7 @@ void nameGen (Profile * players, int numPlayers){
 		}
 
     }
+    strcpy(players[0].name, "Dealer");
 }
 
 
