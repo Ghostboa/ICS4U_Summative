@@ -378,7 +378,7 @@ void roundEnd (Profile* player, int numPlayers){
 //        player[i] ->  =
     }
     for (int i = 0; i < numPlayers; i++){
-        printf ("%30s: %i\n",player[i].name, sum (&player[i]));
+        printf ("%32s: %i\n",player[i].name, sum (&player[i]));
     }
         system("PAUSE");
 }
