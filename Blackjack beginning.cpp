@@ -48,6 +48,7 @@ struct Profile { // Player struct that holds the p
 	int total; // Total count, determines when the player hits 21 and busts.
 	int fucklenuts; // This defines the risk of the computer player, or the amount of points from 21 that they will stand on. (Lower number = higher points.)
 	bool end; // Determines whether the player has busted.
+	char name[80];
 };
 
 
@@ -83,17 +84,17 @@ bool cardCheck(Cards *deck, int suit, int value){ //returns whether a certain ca
 }
 
 void rules(){ // Prints the rules...
-	//printf("RULES:\n");
-	//printf("Blackjack is the most DANK game on PC! I've learned how to collect SWAG DOLLAS \nfrom Bigley by harnessing the Illuminatis card counters and 360 noscoping the \ndealer! MY review of Blackjack is 8/8, no b8 m8. Hehv fun! Huehuehuehuehuehue.\n");
-	//system("PAUSE");
-
 	printf("RULES:\n");
-	printf("The goal of Blackjack is to have the highest hand without exceeding a total value of 21.\n");
+	printf("Blackjack is the most DANK game on PC! I've learned how to collect SWAG DOLLAS \nfrom Bigley by harnessing the Illuminatis card counters and 360 noscoping the \ndealer! My review of Blackjack is 8/8, no b8 m8. Hehv fun! Huehuehuehuehuehue.\n");
+	system("PAUSE");
+    system("cls");
+	printf("RULES:\n");
+	printf("The goal of Blackjack is to have the highest hand without exceeding a total\nvalue of 21.\n");
 	printf("Every player is dealt two cards.\n");
 	printf("Every player can do two things: hit and stand.\n");
 	printf("If you 'hit', you get another card.\n");
 	printf("If you 'stand' then you are doing taking cards.\n");
-	printf("If you hit and it ushes the value of your hand over 21, then you are out for that round.\n");
+	printf("If you hit and it pushes the value of your hand over 21, then you are out for\nthat round.\n");
 	printf("The dealer goes first, and hits himself until he has a hand of 18 or over.\n");
 	printf("Everybody else can choose to hit or stand as they wish.\n");
 	system("PAUSE");
@@ -383,8 +384,8 @@ int startMenu(){
 	printf("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
 	printf("0. Rules \n");
 	printf("1. Start game. \n");
-	printf("2. Exit\n");
-	printf("3. Test Load game \n");
+	printf("2. Load game \n");
+	printf("3. Exit\n");
 
 	user = getNum(0, 3);
 	system("cls");
@@ -473,10 +474,14 @@ int main(){
 		case (1) :
 			mainGame(&deck, player);
 			break;
-
-		case (2) :
+		case(2) :
+		    loadGame(&deck, player);
+		    break;
+		case (3) :
 			return 0;
-		case(3) : loadGame(&deck, player);
+        default:
+            printf ("UrBadKid");
+            break;
 		}
 	}
 	system("PAUSE");
