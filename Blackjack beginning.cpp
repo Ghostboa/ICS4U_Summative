@@ -392,46 +392,38 @@ void nameGen (Profile * players, int numPlayers){
 
         do {
             whichName = rb (1, 8);
-            //printf ("Which name is %d\n", whichName);
-            //system ("PAUSE");
             for (int j = 0; j < 8; j++){
                 if (whichName == takenNames[j])
                     go = 0;
+                else
+                    go = 1;
             }
         }while (go == 0);
 
         switch (whichName){
 		case (1) :
             strcpy(players[i].name, "DANK!");
-            //printf ("Assigning DANK! to character %d\n", i);
             break;
 		case (2) :
             strcpy(players[i].name, "Jon Devlin");
-            //printf ("Assigning Jon to character %d\n", i);
             break;
 		case (3) :
             strcpy(players[i].name, "Brooker Brooks");
-            //printf ("Assigning Brooks to character %d\n", i);
             break;
 		case (4) :
             strcpy(players[i].name, "Ross Reid");
-            //printf ("Assigning Ross to character %d\n", i);
             break;
 		case (5) :
             strcpy(players[i].name, "Big Tyrone");
-            //printf ("Assigning Tyrone to character %d\n", i);
             break;
 		case (6) :
             strcpy(players[i].name, "Cameron 'Lebron' Mussar");
-            //printf ("Assigning Lebron to character %d\n", i);
             break;
 		case (7) :
             strcpy(players[i].name, "The Glorious Leader Rem-Jong-Un");
-            //printf ("Assigning Remi to character %d\n", i);
             break;
 		case (8) :
             strcpy(players[i].name, "Neil DeGrasse Tyson");
-            //printf ("Assigning Neil to character %d\n", i);
             break;
 		}
         takenNames[i] = whichName;
