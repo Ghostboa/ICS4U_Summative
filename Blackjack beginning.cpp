@@ -383,6 +383,15 @@ void roundEnd (Profile* player, int numPlayers){
         system("PAUSE");
 }
 
+int nameCheck (int*whichName, int * takenNames, int i){
+    if (i == 8)
+        return 1;
+    if (*whichName == takenNames[i])
+        return 0;
+    else
+        return nameCheck (whichName, takenNames, i+1);
+}
+
 void nameGen (Profile * players, int numPlayers){
     int whichName;
     int takenNames [8] = {-1, -1, -1, -1, -1, -1, -1, -1};
@@ -392,12 +401,7 @@ void nameGen (Profile * players, int numPlayers){
 
         do {
             whichName = rb (1, 8);
-            for (int j = 0; j < 8; j++){
-                if (whichName == takenNames[j])
-                    go = 0;
-                else
-                    go = 1;
-            }
+            go = nameCheck(&whichName, takenNames, 0);
         }while (go == 0);
 
         switch (whichName){
