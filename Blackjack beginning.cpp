@@ -2,7 +2,7 @@
 
 //Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
 // Other cool stuff: Variable AI aggressiveness/Number of Players, number of Cards, game records or login thing, actual betting, encrypted files, difficulty settings.
-
+//Harrison's todo list: Remove system pauses, Proper win display, proper save/load from file
 /*
 The players' objective is to win money by creating card totals that turn out to be higher than the dealer's hand
 but do not exceed 21 ("busting"/"breaking"), or alternatively by allowing the dealer to take additional Cards until they bust.
@@ -228,12 +228,9 @@ void printCard(const int suit, const int value){ // Prints a card on the screen.
 }
 
 void deal(Cards *deck, Profile* player, int numPlayers){ // Does the initial dealing (Hits each player twice)
-	for (int i = 0; i < numPlayers; i++)
-
-		if (i == 0){ // Exception case for the dealer (He only gets one card, then at the start of the game, gets another.)
-		hit(deck, &player[i]);
-		}
-		else for (int j = 0; j < 2; j++){
+    hit(deck, &player[0]);
+	for (int i = 1; i < numPlayers; i++)
+		for (int j = 0; j < 2; j++){
 			hit(deck, &player[i]);
 		}
 }
@@ -325,10 +322,10 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 	int userIn;
 
 	while (endGame(deck, player, numPlayers) == false){ // Checks for the end of the game
-		for (int i = 0; i < numPlayers; i++){ // Displays
+		for (int i = 0; i < numPlayers+1; i++){ // Displays
 			display(player, numPlayers);
 
-			if (i == 0)
+			if (i == numPlayers)
 				dealer(deck, player); // Dealer turn
 
 			else if (i == 1){ // Player Turn
@@ -337,7 +334,7 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 					userIn = 0;
 
 					do{ // Player input menu
-						printf("Player %i, would you like to\n1 - stand\n2 - hit?\n3 - Save\n", i);
+						printf("Player %i, would you like to\n1 - Stand\n2 - Hit?\n3 - Save\n", i);
 						userIn = getNum(1, 3);
 						if (userIn == 1 || sum (&player[i]) >= 21)
 							player[i].end = true;
@@ -360,7 +357,6 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 
 	}
 	printf("End of Game.\n");
-	system("PAUSE\n");
 }
 
 //note to self: swap both players' pointers!!!
@@ -375,12 +371,11 @@ void roundEnd (Profile* player, int numPlayers){
                 player[i] = temp;
             }
         }
-//        player[i] ->  =
     }
     for (int i = 0; i < numPlayers; i++){
-        printf ("%32s: %i\n",player[i].name, sum (&player[i]));
+        if (sum(&player[i]) <= 21)
+            printf ("%32s: %i\n",player[i].name, sum (&player[i]));
     }
-        system("PAUSE");
 }
 
 int nameCheck (int*whichName, int * takenNames, int i){
@@ -458,7 +453,7 @@ void mainGame(Cards *deck, Profile* player){
 	deal(deck, player, numPlayers);
 	round(deck, player, numPlayers);
 	roundEnd (player,numPlayers);
-	system ("PAUSE");
+	system("PAUSE");
 }
 
 void loadGame(Cards *deck, Profile *player){
