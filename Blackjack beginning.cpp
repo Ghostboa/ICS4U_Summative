@@ -14,7 +14,7 @@ On their turn, players must choose whether to
 "surrender" (give up a half-bet and retire from the game)
 */
 
-//#include "stdafx.h"
+#include "stdafx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -88,7 +88,7 @@ void rules(){ // Prints the rules...
 	printf("RULES:\n");
 	printf("Blackjack is the most DANK game on PC! I've learned how to collect SWAG DOLLAS \nfrom Bigley by harnessing the Illuminatis card counters and 360 noscoping the \ndealer! My review of Blackjack is 8/8, no b8 m8. Hehv fun! Huehuehuehuehuehue.\n");
 	system("PAUSE");
-    system("cls");
+	system("cls");
 	printf("RULES:\n");
 	printf("The goal of Blackjack is to have the highest hand without exceeding a total\nvalue of 21.\n");
 	printf("Every player is dealt two cards.\n");
@@ -107,11 +107,11 @@ int getNumPlayers(){ // IDK if this is needed...
 	return getNum(2, MAX_PLAYERS);
 }
 
-int playerInit (Profile* player){
-    char temp[80];
-    printf ("Please enter your name\n");
-    fflush(stdin);
-    gets(player[1].name);
+int playerInit(Profile* player){
+	char temp[80];
+	printf("Please enter your name\n");
+	fflush(stdin);
+	gets(player[1].name);
 	printf("Enter Number of players (2-6) \n");
 	return getNum(2, 6);
 }
@@ -228,10 +228,10 @@ void printCard(const int suit, const int value){ // Prints a card on the screen.
 }
 
 void deal(Cards *deck, Profile* player, int numPlayers){ // Does the initial dealing (Hits each player twice)
-    hit(deck, &player[0]);
+	hit(deck, &player[0]);
 	for (int i = 1; i < numPlayers; i++)
 		for (int j = 0; j < 2; j++){
-			hit(deck, &player[i]);
+		hit(deck, &player[i]);
 		}
 }
 
@@ -264,13 +264,13 @@ void display(Profile* player, int numPlayers){ // Displays the players hands on 
 
 	for (int i = 0; i < numPlayers; i++){
 
-			printf("%s\n", player[i].name);
+		printf("%s\n", player[i].name);
 
 		for (int k = 0; k < player[i].numCards; k++){
 			printCard(player[i].hand[k].suit, player[i].hand[k].value);
 
 		}
-		printf(": %i.\n\n", sum (&player[i]));
+		printf(": %i.\n\n", sum(&player[i]));
 	}
 	printf("\n");
 
@@ -295,8 +295,9 @@ void saveGame(Profile* player, int numPlayers){ // Writes things to a file to be
 		fprintf(fp, "%i\n", numPlayers); // Number of players is at top of file.
 		for (int i = 0; i < numPlayers; i++){
 			fprintf(fp, "%i\n", player[i].numCards); // numCards
+			fprintf(fp, "%s\n", player[i].name);
 			for (int k = 0; k < player[i].numCards; k++){
-				fprintf(fp, "%i %i %i ", player[i].hand[k].value, player[i].hand[k].suit, player[i].hand[k].counter);
+				fprintf(fp, "%i %i ", player[i].hand[k].value, player[i].hand[k].suit);
 			} // value/suit/counter
 			fprintf(fp, "\n");
 			fprintf(fp, "%i", player[i].total); //Player total.
@@ -322,7 +323,7 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 	int userIn;
 
 	while (endGame(deck, player, numPlayers) == false){ // Checks for the end of the game
-		for (int i = 0; i < numPlayers+1; i++){ // Displays
+		for (int i = 0; i < numPlayers + 1; i++){ // Displays
 			display(player, numPlayers);
 
 			if (i == numPlayers)
@@ -336,7 +337,7 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 					do{ // Player input menu
 						printf("Player %i, would you like to\n1 - Stand\n2 - Hit?\n3 - Save\n", i);
 						userIn = getNum(1, 3);
-						if (userIn == 1 || sum (&player[i]) >= 21)
+						if (userIn == 1 || sum(&player[i]) >= 21)
 							player[i].end = true;
 						else if (userIn == 2)
 							hit(deck, &player[i]);
@@ -344,7 +345,7 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 							saveGame(player, numPlayers);
 							display(player, numPlayers);
 						}
-					} while (userIn == 3 ); // Lets you go again if you save the game... That was a bug.
+					} while (userIn == 3); // Lets you go again if you save the game... That was a bug.
 				}
 			}
 			else if (i > 1){ // AI turn
@@ -360,74 +361,74 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 }
 
 //note to self: swap both players' pointers!!!
-void roundEnd (Profile* player, int numPlayers){
-    Profile temp;
-    //bubblesort because very small array
-    for (int i = 0; i < numPlayers; i++){
-        for (int j = i; j < numPlayers ; j++){
-            if (sum(&player[i]) < sum(&player[j])){
-                temp = player[j];
-                player[j] = player[i];
-                player[i] = temp;
-            }
-        }
-    }
-    for (int i = 0; i < numPlayers; i++){
-        if (sum(&player[i]) <= 21)
-            printf ("%32s: %i\n",player[i].name, sum (&player[i]));
-    }
-}
-
-int nameCheck (int*whichName, int * takenNames, int i){
-    if (i == 8)
-        return 1;
-    if (*whichName == takenNames[i])
-        return 0;
-    else
-        return nameCheck (whichName, takenNames, i+1);
-}
-
-void nameGen (Profile * players, int numPlayers){
-    int whichName;
-    int takenNames [8] = {-1, -1, -1, -1, -1, -1, -1, -1};
-    int go = 1;
-
-    for (int i = 2; i < numPlayers; i++){
-
-        do {
-            whichName = rb (1, 8);
-            go = nameCheck(&whichName, takenNames, 0);
-        }while (go == 0);
-
-        switch (whichName){
-		case (1) :
-            strcpy(players[i].name, "DANK!");
-            break;
-		case (2) :
-            strcpy(players[i].name, "Jon Devlin");
-            break;
-		case (3) :
-            strcpy(players[i].name, "Brooker Brooks");
-            break;
-		case (4) :
-            strcpy(players[i].name, "Ross Reid");
-            break;
-		case (5) :
-            strcpy(players[i].name, "Big Tyrone");
-            break;
-		case (6) :
-            strcpy(players[i].name, "Cameron 'Lebron' Mussar");
-            break;
-		case (7) :
-            strcpy(players[i].name, "The Glorious Leader Rem-Jong-Un");
-            break;
-		case (8) :
-            strcpy(players[i].name, "Neil DeGrasse Tyson");
-            break;
+void roundEnd(Profile* player, int numPlayers){
+	Profile temp;
+	//bubblesort because very small array
+	for (int i = 0; i < numPlayers; i++){
+		for (int j = i; j < numPlayers; j++){
+			if (sum(&player[i]) < sum(&player[j])){
+				temp = player[j];
+				player[j] = player[i];
+				player[i] = temp;
+			}
 		}
-        takenNames[i] = whichName;
-    }
-    strcpy(players[0].name, "Dealer");
+	}
+	for (int i = 0; i < numPlayers; i++){
+		if (sum(&player[i]) <= 21)
+			printf("%32s: %i\n", player[i].name, sum(&player[i]));
+	}
+}
+
+int nameCheck(int*whichName, int * takenNames, int i){
+	if (i == 8)
+		return 1;
+	if (*whichName == takenNames[i])
+		return 0;
+	else
+		return nameCheck(whichName, takenNames, i + 1);
+}
+
+void nameGen(Profile * players, int numPlayers){
+	int whichName;
+	int takenNames[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+	int go = 1;
+
+	for (int i = 2; i < numPlayers; i++){
+
+		do {
+			whichName = rb(1, 8);
+			go = nameCheck(&whichName, takenNames, 0);
+		} while (go == 0);
+
+		switch (whichName){
+		case (1) :
+			strcpy(players[i].name, "DANK!");
+			break;
+		case (2) :
+			strcpy(players[i].name, "Jon Devlin");
+			break;
+		case (3) :
+			strcpy(players[i].name, "Brooker Brooks");
+			break;
+		case (4) :
+			strcpy(players[i].name, "Ross Reid");
+			break;
+		case (5) :
+			strcpy(players[i].name, "Big Man Tyrone");
+			break;
+		case (6) :
+			strcpy(players[i].name, "Cameron 'Lebron' Mussar");
+			break;
+		case (7) :
+			strcpy(players[i].name, "The Glorious Leader Rem-Jong-Un");
+			break;
+		case (8) :
+			strcpy(players[i].name, "Neil DeGrasse Tyson");
+			break;
+		}
+		takenNames[i] = whichName;
+	}
+	strcpy(players[0].name, "Dealer");
 }
 
 
@@ -452,7 +453,7 @@ void mainGame(Cards *deck, Profile* player){
 	nameGen(player, numPlayers);
 	deal(deck, player, numPlayers);
 	round(deck, player, numPlayers);
-	roundEnd (player,numPlayers);
+	roundEnd(player, numPlayers);
 	system("PAUSE");
 }
 
@@ -492,9 +493,10 @@ void loadGame(Cards *deck, Profile *player){
 
 		for (int i = 0; i < numPlayers; i++){
 			fscanf(fp, "%i ", &player[i].numCards);
+			fscanf(fp, "%s ", &player[i].name);
 
 			for (int k = 0; k < player[i].numCards; k++){
-				fscanf(fp, "%i %i %i ", &player[i].hand[k].value, &player[i].hand[k].suit, &player[i].hand[k].counter); //Value,suit,counter.
+				fscanf(fp, "%i %i ", &player[i].hand[k].value, &player[i].hand[k].suit); //Value,suit
 				setPlayed(deck, player[i].hand[k].value, player[i].hand[k].suit); // Makes sure that no duplicates can be dealt
 
 			}
@@ -526,13 +528,13 @@ int main(){
 			mainGame(&deck, player);
 			break;
 		case(2) :
-		    loadGame(&deck, player);
-		    break;
+			loadGame(&deck, player);
+			break;
 		case (3) :
 			return 0;
-        default:
-            printf ("UrBadKid");
-            break;
+		default:
+			printf("UrBadKid");
+			break;
 		}
 	}
 	system("PAUSE");
