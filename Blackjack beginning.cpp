@@ -14,7 +14,7 @@ On their turn, players must choose whether to
 "surrender" (give up a half-bet and retire from the game)
 */
 
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -108,7 +108,6 @@ int getNumPlayers(){ // IDK if this is needed...
 }
 
 int playerInit(Profile* player){
-	char temp[80];
 	printf("Please enter your name\n");
 	fflush(stdin);
 	gets(player[1].name);
@@ -229,10 +228,15 @@ void printCard(const int suit, const int value){ // Prints a card on the screen.
 
 void deal(Cards *deck, Profile* player, int numPlayers){ // Does the initial dealing (Hits each player twice)
 	hit(deck, &player[0]);
-	for (int i = 1; i < numPlayers; i++)
+	for (int i = 0; i < numPlayers; i++)
+
+		if (i > 0){
 		for (int j = 0; j < 2; j++){
-		hit(deck, &player[i]);
+			hit(deck, &player[i]);
 		}
+		}
+		else hit(deck, &player[i]);
+		
 }
 
 void dealer(Cards *deck, Profile*dealer){ // Dealer AI
@@ -293,14 +297,15 @@ void saveGame(Profile* player, int numPlayers){ // Writes things to a file to be
 
 	if (fp){
 		fprintf(fp, "%i\n", numPlayers); // Number of players is at top of file.
+
+		for (int i = 0; i < numPlayers; i++){
+			fprintf(fp, "%s\n", player[i].name); // name....
+		}
 		for (int i = 0; i < numPlayers; i++){
 			fprintf(fp, "%i\n", player[i].numCards); // numCards
-			fprintf(fp, "%s\n", player[i].name);
 			for (int k = 0; k < player[i].numCards; k++){
 				fprintf(fp, "%i %i ", player[i].hand[k].value, player[i].hand[k].suit);
 			} // value/suit/counter
-			fprintf(fp, "\n");
-			fprintf(fp, "%i", player[i].total); //Player total.
 			fprintf(fp, "\n");
 			fprintf(fp, "%i", player[i].end);
 			fprintf(fp, "\n");
@@ -323,10 +328,12 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 	int userIn;
 
 	while (endGame(deck, player, numPlayers) == false){ // Checks for the end of the game
-		for (int i = 0; i < numPlayers + 1; i++){ // Displays
+		for (int i = 0; i < numPlayers ; i++){ // Displays
+
+
 			display(player, numPlayers);
 
-			if (i == numPlayers)
+			if (i == 0)
 				dealer(deck, player); // Dealer turn
 
 			else if (i == 1){ // Player Turn
@@ -460,6 +467,7 @@ void mainGame(Cards *deck, Profile* player){
 void loadGame(Cards *deck, Profile *player){
 	FILE *fp;
 	int numPlayers = 0;
+	int temp = 0;
 
 	printf("Which slot would you like to load from? (1-3) \n");
 	printf("0. Exit \n");
@@ -492,19 +500,26 @@ void loadGame(Cards *deck, Profile *player){
 		}
 
 		for (int i = 0; i < numPlayers; i++){
+			fgets(player[i].name, 80, fp);// WHY WONT THIS WORK ASDFGHJKL
+			player[i].name[strlen(player[i].name)-1] = NULL;
+		}
+
+		for (int i = 0; i < numPlayers; i++){
 			fscanf(fp, "%i ", &player[i].numCards);
-			fscanf(fp, "%s ", &player[i].name);
+
 
 			for (int k = 0; k < player[i].numCards; k++){
 				fscanf(fp, "%i %i ", &player[i].hand[k].value, &player[i].hand[k].suit); //Value,suit
 				setPlayed(deck, player[i].hand[k].value, player[i].hand[k].suit); // Makes sure that no duplicates can be dealt
 
 			}
-			fscanf(fp, "%i ", &player[i].total); //Count
-			fscanf(fp, "%i ", &player[i].end); // Checks if player's ended or not.
+			fscanf(fp, "%i ", &temp); // Checks if player's ended or not.
+			player[i].end = temp;
 		}
 		fclose(fp);
 		round(deck, player, numPlayers);
+		roundEnd(player, numPlayers);
+		system("PAUSE");
 	}
 
 
@@ -516,7 +531,7 @@ int main(){
 
 	Profile player[10];
 	Cards deck;
-	srand(time(NULL)); // Seeding the thing
+	srand((unsigned int)time(NULL)); // Seeding the thing
 
 	while (1){
 		switch (startMenu()){
@@ -528,7 +543,7 @@ int main(){
 			mainGame(&deck, player);
 			break;
 		case(2) :
-			loadGame(&deck, player);
+			loadGame(&deck, &player[0]);
 			break;
 		case (3) :
 			return 0;
