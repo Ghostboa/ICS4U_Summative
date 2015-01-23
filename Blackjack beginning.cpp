@@ -1,7 +1,6 @@
 // Blackjack beginning.cpp : Defines the entry point for the console application.
 
-//Requirements: Save output to File, Recursive shuffle, complete actual game with Dealer AI
-// Other cool stuff: Variable AI aggressiveness/Number of Players, number of Cards, game records or login thing, actual betting, encrypted files, difficulty settings.
+// Other cool stuff: number of Cards, actual betting, encrypted files, difficulty settings.
 
 /*
 The players' objective is to win money by creating card totals that turn out to be higher than the dealer's hand
@@ -228,12 +227,9 @@ void printCard(const int suit, const int value){ // Prints a card on the screen.
 }
 
 void deal(Cards *deck, Profile* player, int numPlayers){ // Does the initial dealing (Hits each player twice)
-	for (int i = 0; i < numPlayers; i++)
-
-		if (i == 0){ // Exception case for the dealer (He only gets one card, then at the start of the game, gets another.)
-		hit(deck, &player[i]);
-		}
-		else for (int j = 0; j < 2; j++){
+    hit(deck, &player[0]);
+	for (int i = 1; i < numPlayers; i++)
+		for (int j = 0; j < 2; j++){
 			hit(deck, &player[i]);
 		}
 }
@@ -325,10 +321,10 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 	int userIn;
 
 	while (endGame(deck, player, numPlayers) == false){ // Checks for the end of the game
-		for (int i = 0; i < numPlayers; i++){ // Displays
+		for (int i = 0; i < numPlayers+1; i++){ // Displays
 			display(player, numPlayers);
 
-			if (i == 0)
+			if (i == numPlayers)
 				dealer(deck, player); // Dealer turn
 
 			else if (i == 1){ // Player Turn
@@ -337,7 +333,7 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 					userIn = 0;
 
 					do{ // Player input menu
-						printf("Player %i, would you like to\n1 - stand\n2 - hit?\n3 - Save\n", i);
+						printf("Player %i, would you like to\n1 - Stand\n2 - Hit?\n3 - Save\n", i);
 						userIn = getNum(1, 3);
 						if (userIn == 1 || sum (&player[i]) >= 21)
 							player[i].end = true;
@@ -359,11 +355,9 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 		}
 
 	}
-	printf("End of Game.\n");
-	system("PAUSE\n");
+	printf("End of Game.\n\n\n");
 }
 
-//note to self: swap both players' pointers!!!
 void roundEnd (Profile* player, int numPlayers){
     Profile temp;
     //bubblesort because very small array
@@ -375,38 +369,62 @@ void roundEnd (Profile* player, int numPlayers){
                 player[i] = temp;
             }
         }
-//        player[i] ->  =
     }
+    printf ("Position%40s","Scores\n");
     for (int i = 0; i < numPlayers; i++){
-        printf ("%s: %i\n",player[i].name, sum (&player[i]));
+        if (sum(&player[i]) <= 21)
+            printf ("%32s: %i\n", player[i].name, sum (&player[i]));
     }
-        system("PAUSE");
+}
+
+int nameCheck (int*whichName, int * takenNames, int i){
+    if (i == 8)
+        return 1;
+    if (*whichName == takenNames[i])
+        return 0;
+    else
+        return nameCheck (whichName, takenNames, i+1);
 }
 
 void nameGen (Profile * players, int numPlayers){
     int whichName;
-    int takenNames [8];
+    int takenNames [8] = {-1, -1, -1, -1, -1, -1, -1, -1};
+    int go = 1;
+
     for (int i = 2; i < numPlayers; i++){
-        whichName = rb (1, 8);
+
+        do {
+            whichName = rb (1, 8);
+            go = nameCheck(&whichName, takenNames, 0);
+        }while (go == 0);
+
         switch (whichName){
 		case (1) :
             strcpy(players[i].name, "DANK!");
+            break;
 		case (2) :
             strcpy(players[i].name, "Jon Devlin");
+            break;
 		case (3) :
             strcpy(players[i].name, "Brooker Brooks");
+            break;
 		case (4) :
             strcpy(players[i].name, "Ross Reid");
+            break;
 		case (5) :
-            strcpy(players[i].name, "Cotton-Headed Ninny-Muggins");
+            strcpy(players[i].name, "Big Tyrone");
+            break;
 		case (6) :
             strcpy(players[i].name, "Cameron 'Lebron' Mussar");
+            break;
 		case (7) :
-            strcpy(players[i].name, "The Great Leader Rem-Jong-Un");
+            strcpy(players[i].name, "The Glorious Leader Rem-Jong-Un");
+            break;
 		case (8) :
             strcpy(players[i].name, "Neil DeGrasse Tyson");
+            break;
 		}
-
+        takenNames[i] = whichName;
     }
     strcpy(players[0].name, "Dealer");
 }
@@ -434,7 +452,7 @@ void mainGame(Cards *deck, Profile* player){
 	deal(deck, player, numPlayers);
 	round(deck, player, numPlayers);
 	roundEnd (player,numPlayers);
-	system ("PAUSE");
+	system("PAUSE");
 }
 
 void loadGame(Cards *deck, Profile *player){
@@ -470,7 +488,6 @@ void loadGame(Cards *deck, Profile *player){
 			system("Pause");
 			return;
 		}
-
 
 		for (int i = 0; i < numPlayers; i++){
 			fscanf(fp, "%i ", &player[i].numCards);
