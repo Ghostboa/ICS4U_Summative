@@ -50,7 +50,6 @@ struct Profile { // Player struct that holds the p
 	int fucklenuts; // This defines the risk of the computer player, or the amount of points from 21 that they will stand on. (Lower number = higher points.)
 	bool end; // Determines whether the player has busted.
 	char name[80];
-	int nameNum;
 };
 
 
@@ -277,42 +276,8 @@ void display(Profile* player, int numPlayers){ // Displays the players hands on 
 
 }
 
-void assignName(Profile *players, int *takenNames, int whichName, int i){
-
-	switch (whichName){
-	case (1) :
-		strcpy(players[i].name, "DANK!");
-		break;
-	case (2) :
-		strcpy(players[i].name, "Jon Devlin");
-		break;
-	case (3) :
-		strcpy(players[i].name, "Brooker Brooks");
-		break;
-	case (4) :
-		strcpy(players[i].name, "Ross Reid");
-		break;
-	case (5) :
-		strcpy(players[i].name, "Big Man Tyrone");
-		break;
-	case (6) :
-		strcpy(players[i].name, "Cameron 'Lebron' Mussar");
-		break;
-	case (7) :
-		strcpy(players[i].name, "The Glorious Leader Rem-Jong-Un");
-		break;
-	case (8) :
-		strcpy(players[i].name, "Neil DeGrasse Tyson");
-		break;
-	}
-	takenNames[i] = whichName;
-	players[i].nameNum = whichName;
-}
-
-
 void saveGame(Profile* player, int numPlayers){ // Writes things to a file to be read later.
 	FILE *fp;
-	int takenNames[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 
 	printf("Which slot would you like to save in? (1-3) \n");
 	int slot = getNum(1, 3);
@@ -330,9 +295,7 @@ void saveGame(Profile* player, int numPlayers){ // Writes things to a file to be
 		fprintf(fp, "%i\n", numPlayers); // Number of players is at top of file.
 		for (int i = 0; i < numPlayers; i++){
 			fprintf(fp, "%i\n", player[i].numCards); // numCards
-			fprintf(fp, "%i\n", player[i].nameNum); // name Assignment number
-			assignName(player, &takenNames[0], player[i].nameNum, i); // Assigns number to a name, exactly like it does for the name gen.
-
+			fprintf(fp, "%s\n", player[i].name);
 			for (int k = 0; k < player[i].numCards; k++){
 				fprintf(fp, "%i %i ", player[i].hand[k].value, player[i].hand[k].suit);
 			} // value/suit/counter
@@ -425,8 +388,6 @@ int nameCheck(int*whichName, int * takenNames, int i){
 		return nameCheck(whichName, takenNames, i + 1);
 }
 
-
-
 void nameGen(Profile * players, int numPlayers){
 	int whichName;
 	int takenNames[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
@@ -439,9 +400,33 @@ void nameGen(Profile * players, int numPlayers){
 			go = nameCheck(&whichName, takenNames, 0);
 		} while (go == 0);
 
-		assignName(players, &takenNames[0],whichName,i);
-
-
+		switch (whichName){
+		case (1) :
+			strcpy(players[i].name, "DANK!");
+			break;
+		case (2) :
+			strcpy(players[i].name, "Jon Devlin");
+			break;
+		case (3) :
+			strcpy(players[i].name, "Brooker Brooks");
+			break;
+		case (4) :
+			strcpy(players[i].name, "Ross Reid");
+			break;
+		case (5) :
+			strcpy(players[i].name, "Big Man Tyrone");
+			break;
+		case (6) :
+			strcpy(players[i].name, "Cameron 'Lebron' Mussar");
+			break;
+		case (7) :
+			strcpy(players[i].name, "The Glorious Leader Rem-Jong-Un");
+			break;
+		case (8) :
+			strcpy(players[i].name, "Neil DeGrasse Tyson");
+			break;
+		}
+		takenNames[i] = whichName;
 	}
 	strcpy(players[0].name, "Dealer");
 }
@@ -475,7 +460,6 @@ void mainGame(Cards *deck, Profile* player){
 void loadGame(Cards *deck, Profile *player){
 	FILE *fp;
 	int numPlayers = 0;
-	int nameNum = 0;
 
 	printf("Which slot would you like to load from? (1-3) \n");
 	printf("0. Exit \n");
