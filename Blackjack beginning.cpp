@@ -40,10 +40,10 @@ struct PlayerCard { // Individual card struct that holds a value (1-13, or Ace t
 	int value;
 };
 
-struct Profile { // Player struct that holds the p
+struct Profile { // Player struct that holds the individual player's
 	int numCards;
 	PlayerCard hand[11];
-	int fucklenuts; // This defines the risk of the computer player, or the amount of points from 21 that they will stand on. (Lower number = higher points.)
+	int risk; // This defines the risk of the computer player, or the amount of points from 21 that they will stand on. (Lower number = higher points.)
 	bool end; // Determines whether the player has busted.
 	char name[80];
 };
@@ -51,12 +51,12 @@ struct Profile { // Player struct that holds the p
 
 
 //__________________________________________________________________Basic Functions
-int rb(const int min, const int max) { // Magic random number thingy
+int rb(const int min, const int max) { // Simple function to obtain a random number between min and max
 	return rand() % (max - min + 1) + min;
 }
 
 int getNum(const int lo, const int hi){ // Thing Wilson likes to have to get a number between a min and max value. Could be useful.
-	//good for invalid answer prevention
+	//good for input validation
 	int num = 0;
 
 	std::cin >> num;
@@ -98,12 +98,7 @@ void rules(){ // Prints the rules...
 
 }
 
-int getNumPlayers(){ // IDK if this is needed...
-	printf("Input number of players, including dealer\n");
-	return getNum(2, MAX_PLAYERS);
-}
-
-int playerInit(Profile* player){
+int playerInit(Profile* player){//obtains user's name and number of ai they wish to play against
 	printf("Please enter your name\n");
 	fflush(stdin);
 	gets(player[1].name);
@@ -111,32 +106,30 @@ int playerInit(Profile* player){
 	return getNum(2, 6);
 }
 
-//__________________________________________________________________Complex Functions
-
-int sum(Profile* player){ // Determines player total.
+int sum(Profile* player){ // returns a player's total hand worth
 	int numAces = 0;
-	player->total = 0;
+	int total = 0;
 	for (int i = 0; i < player->numCards; i++){
 		if (player->hand[i].value == 1){
 			numAces++;
 		}
 		else if (player->hand[i].value >= 10){
-			player->total += 10;
+			total += 10;
 		}
 		else{
-			player->total += player->hand[i].value;
+			total += player->hand[i].value;
 		}
 	}
 
 	for (int i = 0; i < numAces; i++){ // This handles the ace values swapping between 11 and 1.
-		if (player->total <= 10){
-			player->total += 11;
+		if (total <= 10){
+			total += 11;
 		}
 		else{
-			player->total += 1;
+			total ++;
 		}
 	}
-	return player->total;
+	return total;
 }
 
 
@@ -162,7 +155,7 @@ void setPlayed(Cards* deck, int tempValue, int tempSuit){ 		//removal from deck 
 
 
 void hit(Cards *deck, Profile* player){ // Deals a player a random card.
-	if (player->total < 21){
+	if (sum(player) < 21){
 		int tempSuit;
 		int tempValue;
 
@@ -186,7 +179,8 @@ void hit(Cards *deck, Profile* player){ // Deals a player a random card.
 	}
 }
 
-void deckReset(Cards *deck, Profile* player, int numPlayers){ // Resets/initializes all structs, because apparently you can't initialize them in the struct declaration or the compiler yells at you.
+void deckReset(Cards *deck, Profile* player, int numPlayers){// Initializes all structs
+    //Apparently you can't initialize them in the struct declaration or the compiler yells at you.
 	for (int i = 0; i <= 12; i++){
 		deck[0].Spades[i] = 0;
 		deck[0].Hearts[i] = 0;
@@ -196,8 +190,7 @@ void deckReset(Cards *deck, Profile* player, int numPlayers){ // Resets/initiali
 
 	for (int i = 0; i <= numPlayers; i++){
 		player[i].numCards = 0;
-		player[i].total = 0;
-		player[i].fucklenuts = rb(MIN_RISK, MAX_RISK);
+		player[i].risk = rb(MIN_RISK, MAX_RISK);
 		player[i].end = false;
 	}
 }
@@ -222,7 +215,7 @@ void printCard(const int suit, const int value){ // Prints a card on the screen.
 	}
 }
 
-void deal(Cards *deck, Profile* player, int numPlayers){ // Does the initial dealing (Hits each player twice)
+void deal(Cards *deck, Profile* player, int numPlayers){ // Does the initial dealing (Hits dealer once, each player twice)
 	hit(deck, &player[0]);
 	for (int i = 1; i < numPlayers; i++)
 		for (int j = 0; j < 2; j++){
@@ -231,7 +224,7 @@ void deal(Cards *deck, Profile* player, int numPlayers){ // Does the initial dea
 }
 
 void dealer(Cards *deck, Profile*dealer){ // Dealer AI
-	if (dealer[0].total < 18)
+	if (sum(dealer) < 18)
 		hit(deck, dealer);
 	else
 		dealer[0].end = true;
@@ -243,7 +236,7 @@ void AI(Cards *deck, Profile*AI){ // Non dealer AI
 
 	//if (AI[0].money < 1)
 	//surrender
-	if (AI[0].total + AI[0].fucklenuts > 21){
+	if (sum(AI) + AI[0].risk > 21){
 		AI[0].end = true;
 		return;
 	}
@@ -284,6 +277,7 @@ void saveGame(Profile* player, int numPlayers){ // Writes things to a file to be
 	else if (slot == 3)
 		fp = fopen("Save3.txt", "w");
 	else //This really should not happen
+        printf ("Error in saveGame");
 		return;
 
 	if (fp){
@@ -349,7 +343,7 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 				AI(deck, &player[i]);
 			}
 
-			if (player[i].total >= 21) // Checks whether the player is busted...
+			if (sum(&player[i])>= 21) // Checks whether the player is busted...
 				player[i].end = true;
 		}
 
@@ -359,7 +353,8 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 
 void roundEnd(Profile* player, int numPlayers){
 	Profile temp;
-	//bubblesort because very small array
+
+	//bubblesort due to very small array
 	for (int i = 0; i < numPlayers; i++){
 		for (int j = i; j < numPlayers; j++){
 			if (sum(&player[i]) < sum(&player[j])){
@@ -369,11 +364,17 @@ void roundEnd(Profile* player, int numPlayers){
 			}
 		}
 	}
-	printf("Position%40s", "Scores\n");
-	for (int i = 0; i < numPlayers; i++){
-		if (sum(&player[i]) <= 21)
-			printf("%32s: %i\n", player[i].name, sum(&player[i]));
-	}
+
+    if (sum (&player[numPlayers-1]) <= 21){
+        printf("%40s Scores\n","");
+        for (int i = 0; i < numPlayers; i++){
+            if (sum(&player[i]) <= 21)
+                printf("%32s: %i\n", player[i].name, sum(&player[i]));
+        }
+    }
+    else{
+        printf ("Everyone Busted!\n\n");
+    }
 }
 
 int nameCheck(int*whichName, int * takenNames, int i){
@@ -385,7 +386,7 @@ int nameCheck(int*whichName, int * takenNames, int i){
 		return nameCheck(whichName, takenNames, i + 1);
 }
 
-void nameGen(Profile * players, int numPlayers){
+void nameGen(Profile * players, int numPlayers){//We chose not to use random letters
 	int whichName;
 	int takenNames[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
 	int go = 1;
@@ -430,7 +431,7 @@ void nameGen(Profile * players, int numPlayers){
 
 
 //__________________________________________________________________Menu and Directories
-int startMenu(){
+int startMenu(){//obatins what system action the user would like to perform
 	int user = 100;
 	system("cls");
 	printf("______________________\n WELCOME TO BLACKJACK\n~~~~~~~~~~~~~~~~~~~~~~\n");
@@ -444,7 +445,7 @@ int startMenu(){
 	return user;
 }
 
-void mainGame(Cards *deck, Profile* player){
+void mainGame(Cards *deck, Profile* player){//performs a single round of play
 	int numPlayers = playerInit(player);
 	deckReset(deck, player, numPlayers);
 	nameGen(player, numPlayers);
@@ -454,7 +455,7 @@ void mainGame(Cards *deck, Profile* player){
 	system("PAUSE");
 }
 
-void loadGame(Cards *deck, Profile *player){
+void loadGame(Cards *deck, Profile *player){//loads game state from save file
 	FILE *fp;
 	int numPlayers = 0;
 	int temp = 0;
@@ -537,7 +538,7 @@ int main(){
 		case (3) :
 			return 0;
 		default:
-			printf("UrBadKid");
+			printf("UrBadKid (Error in main)");
 			break;
 		}
 	}
