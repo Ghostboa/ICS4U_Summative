@@ -38,14 +38,11 @@ struct Cards{
 struct PlayerCard { // Individual card struct that holds a value (1-13, or Ace to King), and a suit number.
 	int suit;
 	int value;
-	int counter; // what is this for?
 };
 
 struct Profile { // Player struct that holds the p
 	int numCards;
 	PlayerCard hand[11];
-	int money;
-	int total; // Total count, determines when the player hits 21 and busts.
 	int fucklenuts; // This defines the risk of the computer player, or the amount of points from 21 that they will stand on. (Lower number = higher points.)
 	bool end; // Determines whether the player has busted.
 	char name[80];
@@ -226,10 +223,10 @@ void printCard(const int suit, const int value){ // Prints a card on the screen.
 }
 
 void deal(Cards *deck, Profile* player, int numPlayers){ // Does the initial dealing (Hits each player twice)
-    hit(deck, &player[0]);
+	hit(deck, &player[0]);
 	for (int i = 1; i < numPlayers; i++)
 		for (int j = 0; j < 2; j++){
-			hit(deck, &player[i]);
+		hit(deck, &player[i]);
 		}
 }
 
@@ -322,7 +319,7 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 	int userIn;
 
 	while (endGame(deck, player, numPlayers) == false){ // Checks for the end of the game
-		for (int i = 0; i < numPlayers+1 ; i++){
+		for (int i = 0; i < numPlayers + 1; i++){
 
 			display(player, numPlayers); // Displays
 
@@ -360,75 +357,75 @@ void round(Cards* deck, Profile* player, int numPlayers){ // Does a round of pla
 	printf("End of Game.\n\n\n");
 }
 
-void roundEnd (Profile* player, int numPlayers){
-    Profile temp;
-    //bubblesort because very small array
-    for (int i = 0; i < numPlayers; i++){
-        for (int j = i; j < numPlayers ; j++){
-            if (sum(&player[i]) < sum(&player[j])){
-                temp = player[j];
-                player[j] = player[i];
-                player[i] = temp;
-            }
-        }
-    }
-    printf ("Position%40s","Scores\n");
-    for (int i = 0; i < numPlayers; i++){
-        if (sum(&player[i]) <= 21)
-            printf ("%32s: %i\n", player[i].name, sum (&player[i]));
-    }
-}
-
-int nameCheck (int*whichName, int * takenNames, int i){
-    if (i == 8)
-        return 1;
-    if (*whichName == takenNames[i])
-        return 0;
-    else
-        return nameCheck (whichName, takenNames, i+1);
-}
-
-void nameGen (Profile * players, int numPlayers){
-    int whichName;
-    int takenNames [8] = {-1, -1, -1, -1, -1, -1, -1, -1};
-    int go = 1;
-
-    for (int i = 2; i < numPlayers; i++){
-
-        do {
-            whichName = rb (1, 8);
-            go = nameCheck(&whichName, takenNames, 0);
-        }while (go == 0);
-
-        switch (whichName){
-		case (1) :
-            strcpy(players[i].name, "DANK!");
-            break;
-		case (2) :
-            strcpy(players[i].name, "Jon Devlin");
-            break;
-		case (3) :
-            strcpy(players[i].name, "Brooker Brooks");
-            break;
-		case (4) :
-            strcpy(players[i].name, "Ross Reid");
-            break;
-		case (5) :
-            strcpy(players[i].name, "Big Tyrone");
-            break;
-		case (6) :
-            strcpy(players[i].name, "Cameron 'Lebron' Mussar");
-            break;
-		case (7) :
-            strcpy(players[i].name, "The Glorious Leader Rem-Jong-Un");
-            break;
-		case (8) :
-            strcpy(players[i].name, "Neil DeGrasse Tyson");
-            break;
+void roundEnd(Profile* player, int numPlayers){
+	Profile temp;
+	//bubblesort because very small array
+	for (int i = 0; i < numPlayers; i++){
+		for (int j = i; j < numPlayers; j++){
+			if (sum(&player[i]) < sum(&player[j])){
+				temp = player[j];
+				player[j] = player[i];
+				player[i] = temp;
+			}
 		}
-        takenNames[i] = whichName;
-    }
-    strcpy(players[0].name, "Dealer");
+	}
+	printf("Position%40s", "Scores\n");
+	for (int i = 0; i < numPlayers; i++){
+		if (sum(&player[i]) <= 21)
+			printf("%32s: %i\n", player[i].name, sum(&player[i]));
+	}
+}
+
+int nameCheck(int*whichName, int * takenNames, int i){
+	if (i == 8)
+		return 1;
+	if (*whichName == takenNames[i])
+		return 0;
+	else
+		return nameCheck(whichName, takenNames, i + 1);
+}
+
+void nameGen(Profile * players, int numPlayers){
+	int whichName;
+	int takenNames[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+	int go = 1;
+
+	for (int i = 2; i < numPlayers; i++){
+
+		do {
+			whichName = rb(1, 8);
+			go = nameCheck(&whichName, takenNames, 0);
+		} while (go == 0);
+
+		switch (whichName){
+		case (1) :
+			strcpy(players[i].name, "DANK!");
+			break;
+		case (2) :
+			strcpy(players[i].name, "Jon Devlin");
+			break;
+		case (3) :
+			strcpy(players[i].name, "Brooker Brooks");
+			break;
+		case (4) :
+			strcpy(players[i].name, "Ross Reid");
+			break;
+		case (5) :
+			strcpy(players[i].name, "Big Tyrone");
+			break;
+		case (6) :
+			strcpy(players[i].name, "Cameron 'Lebron' Mussar");
+			break;
+		case (7) :
+			strcpy(players[i].name, "The Glorious Leader Rem-Jong-Un");
+			break;
+		case (8) :
+			strcpy(players[i].name, "Neil DeGrasse Tyson");
+			break;
+		}
+		takenNames[i] = whichName;
+	}
+	strcpy(players[0].name, "Dealer");
 }
 
 
@@ -494,7 +491,7 @@ void loadGame(Cards *deck, Profile *player){
 
 		for (int i = 0; i < numPlayers; i++){
 			fgets(player[i].name, 80, fp);
-			player[i].name[strlen(player[i].name)-1] = NULL;
+			player[i].name[strlen(player[i].name) - 1] = NULL;
 		}
 		for (int i = 0; i < numPlayers; i++){
 			fscanf(fp, "%i ", &player[i].numCards);
